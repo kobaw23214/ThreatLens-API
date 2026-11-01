@@ -1,0 +1,146 @@
+{
+  "name": "English NER Long Text Test Set",
+  "description": "Contains 10 paragraph-length samples covering incident reports, security logs, and threat intelligence contexts for long-sequence NER benchmarking.",
+  "labels": ["person", "email", "organization", "title", "phone", "account", "device", "ip address", "mac address", "domain", "abbreviation", "password", "location"],
+  "label_mapping": {
+    "person": "PERSON",
+    "email": "EMAIL",
+    "organization": "ORG",
+    "title": "TITLE",
+    "phone": "PHONE",
+    "account": "ACCOUNT",
+    "device": "DEVICE",
+    "ip address": "IP",
+    "mac address": "MAC",
+    "domain": "DOMAIN",
+    "abbreviation": "ABBR",
+    "password": "PASSWORD",
+    "location": "LOCATION",
+    "PERSON": "PERSON",
+    "GPE": "LOCATION",
+    "LOC": "LOCATION",
+    "ORG": "ORG",
+    "FAC": "LOCATION",
+    "product-software": "DEVICE",
+    "product-other": "DEVICE"
+  },
+  "samples": [
+    {
+      "text": "On October 15, 2023, Chief Security Architect John Doe (email: john.doe@cyberdyne.com) from Cyberdyne Systems conducted a comprehensive security audit at the New York datacenter. During his inspection, he discovered that a highly critical Cisco ASA firewall (IP: 10.20.30.40) was completely accessible via the default password admin123. The incident logs strongly suggested that a remote threat actor had already pivoted through the network targeting corp.cyberdyne.local.",
+      "entities": [
+        ["Chief Security Architect", "TITLE", 0, 0],
+        ["John Doe", "PERSON", 0, 0],
+        ["john.doe@cyberdyne.com", "EMAIL", 0, 0],
+        ["Cyberdyne Systems", "ORG", 0, 0],
+        ["New York", "LOCATION", 0, 0],
+        ["Cisco ASA firewall", "DEVICE", 0, 0],
+        ["10.20.30.40", "IP", 0, 0],
+        ["admin123", "PASSWORD", 0, 0],
+        ["corp.cyberdyne.local", "DOMAIN", 0, 0]
+      ]
+    },
+    {
+      "text": "During an ongoing incident response operation, SOC Analyst Jane Smith (Slack account: jsmith_sec) observed highly anomalous and malicious activities originating from IP address 192.168.100.55 located in the London branch office. The intruder successfully bypassed the core Juniper router using a weak compromised credential Password@2024. They immediately established a reverse shell connection and attempted to aggressively exfiltrate large database backups to exfil.hacker-domain.net.",
+      "entities": [
+        ["SOC Analyst", "TITLE", 0, 0],
+        ["Jane Smith", "PERSON", 0, 0],
+        ["jsmith_sec", "ACCOUNT", 0, 0],
+        ["192.168.100.55", "IP", 0, 0],
+        ["London", "LOCATION", 0, 0],
+        ["Juniper router", "DEVICE", 0, 0],
+        ["Password@2024", "PASSWORD", 0, 0],
+        ["exfil.hacker-domain.net", "DOMAIN", 0, 0]
+      ]
+    },
+    {
+      "text": "Network Engineer Bob Johnson (emergency phone: +1-555-0198) working at TechCorp Inc. reported a catastrophic and severe service outage in the main Seattle facility. Investigation revealed that the central core switch, identified by MAC address 00:1A:2B:3C:4D:5E, went completely offline. This failure occurred after a massive DDoS attack systematically overwhelmed its management interface hosted on the internal address 172.16.0.1.",
+      "entities": [
+        ["Network Engineer", "TITLE", 0, 0],
+        ["Bob Johnson", "PERSON", 0, 0],
+        ["+1-555-0198", "PHONE", 0, 0],
+        ["TechCorp Inc.", "ORG", 0, 0],
+        ["Seattle", "LOCATION", 0, 0],
+        ["core switch", "DEVICE", 0, 0],
+        ["00:1A:2B:3C:4D:5E", "MAC", 0, 0],
+        ["DDoS", "ABBR", 0, 0],
+        ["172.16.0.1", "IP", 0, 0]
+      ]
+    },
+    {
+      "text": "Security Director Alice Williams (employee ID: AW-7788) identified an unauthorized, highly suspicious RDP session directly connected to the company's central payroll database server. The illicit connection was authenticated utilizing the recently stolen administrative password Qwerty!23. Network telemetry showed the traffic originated from an untrusted external IP 203.0.113.5 which reverse-resolved and mapped back to the malicious domain evil-corp.com.",
+      "entities": [
+        ["Security Director", "TITLE", 0, 0],
+        ["Alice Williams", "PERSON", 0, 0],
+        ["AW-7788", "ACCOUNT", 0, 0],
+        ["RDP", "ABBR", 0, 0],
+        ["database server", "DEVICE", 0, 0],
+        ["Qwerty!23", "PASSWORD", 0, 0],
+        ["203.0.113.5", "IP", 0, 0],
+        ["evil-corp.com", "DOMAIN", 0, 0]
+      ]
+    },
+    {
+      "text": "Penetration Tester Charlie Brown, an elite member of the Offensive Security Team, successfully exploited an unpatched zero-day vulnerability in the enterprise VPN gateway at the Toronto headquarters. Without raising any immediate alarms, he casually used the default hardcoded account admin paired with the password password1 to gain initial network entry, eventually escalating his privileges to full domain admin on the domain corp.local.",
+      "entities": [
+        ["Penetration Tester", "TITLE", 0, 0],
+        ["Charlie Brown", "PERSON", 0, 0],
+        ["VPN gateway", "DEVICE", 0, 0],
+        ["Toronto", "LOCATION", 0, 0],
+        ["admin", "ACCOUNT", 0, 0],
+        ["password1", "PASSWORD", 0, 0],
+        ["corp.local", "DOMAIN", 0, 0]
+      ]
+    },
+    {
+      "text": "Cloud Infrastructure Architect David Lee (contact email: dlee@cloud-native.io) noticed a series of highly abnormal API requests continuously directed towards the production Kubernetes cluster. The backend telemetry metrics clearly indicated that a compromised application container was secretly communicating with an external C&C infrastructure located at botnet.malware.ru utilizing encrypted HTTPS protocols to bypass deep packet inspection.",
+      "entities": [
+        ["Cloud Infrastructure Architect", "TITLE", 0, 0],
+        ["David Lee", "PERSON", 0, 0],
+        ["dlee@cloud-native.io", "EMAIL", 0, 0],
+        ["API", "ABBR", 0, 0],
+        ["botnet.malware.ru", "DOMAIN", 0, 0],
+        ["HTTPS", "ABBR", 0, 0]
+      ]
+    },
+    {
+      "text": "Digital Forensics Expert Emily Davis was urgently dispatched to the Berlin branch office immediately following a devastating ransomware outbreak that paralyzed operations. After rigorous analysis, she extracted the core malware payload from a heavily compromised Windows workstation possessing the MAC address 11:22:33:44:55:66. Reverse engineering revealed embedded hardcoded credentials Root@2023 specifically utilized for automated lateral movement.",
+      "entities": [
+        ["Forensics Expert", "TITLE", 0, 0],
+        ["Emily Davis", "PERSON", 0, 0],
+        ["Berlin", "LOCATION", 0, 0],
+        ["Windows workstation", "DEVICE", 0, 0],
+        ["11:22:33:44:55:66", "MAC", 0, 0],
+        ["Root@2023", "PASSWORD", 0, 0]
+      ]
+    },
+    {
+      "text": "Senior IT Support Specialist Michael Clarke (Skype username: mike_support) spent several hours assisting a high-profile VIP executive who unfortunately fell victim to a sophisticated spear-phishing campaign. The executive's authentication credentials for the internal employee portal hr.company.net were fully compromised, which directly led to undetected unauthorized access originating from a highly suspicious residential IP address 8.8.8.8.",
+      "entities": [
+        ["IT Support Specialist", "TITLE", 0, 0],
+        ["Michael Clarke", "PERSON", 0, 0],
+        ["mike_support", "ACCOUNT", 0, 0],
+        ["hr.company.net", "DOMAIN", 0, 0],
+        ["8.8.8.8", "IP", 0, 0]
+      ]
+    },
+    {
+      "text": "Chief Information Security Officer Sarah Connor at the renowned Skynet Cybernetics corporation ordered an immediate and mandatory global password reset across all facilities located in California. This drastic and unprecedented action was immediately prompted by the shocking discovery of a massive, globally distributed credential stuffing attack specifically targeting their primary LDAP directory server hosted securely on IP address 10.0.0.10.",
+      "entities": [
+        ["Chief Information Security Officer", "TITLE", 0, 0],
+        ["Sarah Connor", "PERSON", 0, 0],
+        ["Skynet Cybernetics", "ORG", 0, 0],
+        ["California", "LOCATION", 0, 0],
+        ["LDAP", "ABBR", 0, 0],
+        ["10.0.0.10", "IP", 0, 0]
+      ]
+    },
+    {
+      "text": "Principal Threat Researcher Alex Turner (WeChat handle: alex_threat_hunter) published an incredibly detailed technical analysis regarding a brand new zero-day exploit actively targeting widespread Palo Alto networks security devices. According to the whitepaper, the critical exploit allows remote unauthenticated attackers to entirely bypass the login mechanism and execute arbitrary remote code without ever knowing the administrator password.",
+      "entities": [
+        ["Threat Researcher", "TITLE", 0, 0],
+        ["Alex Turner", "PERSON", 0, 0],
+        ["alex_threat_hunter", "ACCOUNT", 0, 0]
+      ]
+    }
+  ]
+}

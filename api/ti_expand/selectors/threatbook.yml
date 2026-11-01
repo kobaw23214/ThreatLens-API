@@ -1,0 +1,396 @@
+# 微步在线（x.threatbook.com）采集 selector 配置
+# 版本规则：每次修改更新 version，任务诊断信息会记录采集所用版本
+version: "2026-07-26-r9"
+
+# ─── 登录流程（P0 预研 2026-07-24 实测，证据见 ti_data/recon/threatbook/report.json）─
+# 实测链路：
+#   1. 首页常有 AntD 公告弹窗（[class*='modal-wrap'] 遮罩拦截点击），须先关闭
+#   2. 站点无独立 /login 路由（/login → v5/notFound）；点头部红色「登录」按钮
+#      → 302 到 passport.threatbook.cn SSO 登录页
+#   3. SSO 页默认「APP登录」扫码 tab（轮询 /userApi/scanLogin/validate/code），
+#      须点「密码登录」tab 切出账号密码表单，并勾选协议 checkbox
+#   4. 成功标志：URL 离开 passport 域回到 x.threatbook.com 且头部「登录」按钮消失
+#   5. P2 实测补充（2026-07-25）：勾选协议后点「登录」先弹协议确认 modal
+#      （「请阅读并通过…」取消/同意并继续），须点「同意并继续」才进入极验
+#   ⚠️ 密码表单绑定极验 v4 滑块（.geetest_captcha.geetest_bind「请拖动滑块完成拼图」，
+#      gcaptcha4.geetest.com，cookie captcha_v4_user），点提交即可能触发；
+#      P0 未提交（账号安全），建议人工首登（TI_HEADFUL=1）+ storage_state 复用
+login:
+  url: "https://passport.threatbook.cn/login?service=x&callbackURL=https%3A%2F%2Fx.threatbook.com%2F"  # SSO 登录页（人工/自动登录入口）
+  # 探测用数据面 URL 本身：匿名访问必被弹回 passport SSO（sso_url_pattern 命中→False），
+  # 会话有效则停在 /v5/** 原页（success_url_pattern 命中→True，URL 即证据模式）。
+  # ⚠️ 历史教训：首页探测两次被证伪——rememberme cookie 让首页令牌失效后 JS 仍隐藏
+  #   登录按钮（假阳性）；SSO URL 探测则无法识别仅有 X 会话的种子（假阴性）。
+  probe_url: "https://x.threatbook.com/v5/ip/8.8.8.8"
+  sso_url_pattern: "https://passport.threatbook.cn/login**"  # 弹回 SSO 即会话无效
+  success_url_pattern: "^https://x\\.threatbook\\.com"   # 数据面未被弹回即有效（探测只打 /v5/**；登录取消兜底也落本域）
+  dismiss_modal: "[class*='modal-wrap'] [class*='modal-close'], [class*='modal'] [class*='close']"
+  password_tab_text: "密码登录"                # get_by_text 点击切换（默认 APP 扫码）
+  agreement_checkbox: "input[type='checkbox']" # 「已阅读并同意」，未勾选提交被拦
+  agreement_confirm_text: "同意并继续"          # 提交后协议确认 modal 的确认按钮（P2 实测）
+  username_input: "#phoneOrEmail"             # 手机号/邮箱
+  password_input: "#password"
+  submit_button: ".captcha-field input[type='submit']"
+  success_marker: ""                          # URL 即证据（数据面探测，见 probe_url 注释）
+  captcha_marker: ".geetest_box, .geetest_window"  # 极验 v4 滑块面板（实测外层 .geetest_captcha 高 0 不可见，须取内层）
+
+# ─── 查询规则 ────────────────────────────────────────────────────────────────
+# ip 已按真实页面校准（2026-07-25，8.210.88.161 实测 DOM + 逐 tab 转储）：
+#   页面结构：.result-page > main > .main_l（左栏主内容）+ .main_r（右栏工具/用户标签）
+#   - 顶部 .summary.result-page-card：.summary-top（判定 .result + 基础信息 .basic-info
+#     + 概览计数 tr.count-info > .count-item>.key+.value）+ .result-intelInsight_con（情报洞察）
+#   - .result-page__clue：ant-collapse 情报列表（微步情报/相关情报/开源情报/安全博客，默认折叠）
+#   - .analysis-controll #analysisControllUl：tab 栏（网页结果/攻击画像/解析域名/WHOIS/
+#     资产测绘/数字证书/相关样本/相关URL/RDNS），面板渲染进 .pane-content.result-page-card
+#     （默认网页结果；点击 tab 切换，样本/域名/证书等数据由 /v5/node/** XHR 驱动）
+#   ⚠ 共用 .pane-content 的 tab section 必须排在默认面板 section（网页结果）之后
+# r5 结构化改造（2026-07-25）：基础信息(blocks kv+标签)/情报洞察(分组table)/
+#   情报速递(来源table)/网页结果(条目table)/用户标签(tag table)/数字证书(条目table)/
+#   资产测绘(端口+协议 blocks)/端口详情(逐端口table)；攻击画像 tab 新增（暂无结构化样本）
+#   ⚠ 限频注意：短时间高频翻页/tab 点击会触发 /v5/exceedFrequency?msg=CAPTCHA，
+#   离线 recon（dump_tabs 等）也要放慢（本次批量转储约 20 页/25 分钟被限）
+# r7（2026-07-26，yuanbaos.com.cn 实测 DOM，转储 ti_data/recon/threatbook/tabs/）：
+#   - 根因修复：tab 栏对 0 计数 tab 不默认选中——网页结果(count=0)时平台自动激活
+#     首个有数据的 tab（如域名解析），旧版「网页结果=默认面板」抓到的是别人 pane。
+#     网页结果改为显式 click li.relate（ip/domain 同修），不再依赖默认面板顺序
+#   - domain「域名解析」pane 细分四区块（旧版整 pane <tr> 混抓多表错位）：
+#     域名解析(kv：最近解析时间+A/AAAA/NS/MX/TXT/SOA/CNAME，.dns-info .items 首行键)
+#     / 最近解析IP(table，.domain-current-resolve 内唯一表)
+#     / 历史解析IP(table，.history-resolve 直接子级首个表)
+#     / 历史解析记录(table，#history-resolve-scroll-comp 内表)
+# 已实测（匿名态）：
+#   - /v5/ip/{value}、/v5/domain/{value} 路由存在，匿名访问 302 → passport SSO
+#     （详情页强制登录，无免登录通道）
+#   - /v5/detail/ip/...、/v5/file/{md5|sha256} 均 → v5/notFound（路由不存在）
+#   - 样本报告在沙箱域：https://s.threatbook.com/report/file/{sha256}
+#   - 站点数据接口走 /v5/node/** 前缀
+query:
+  ip:
+    url_tpl: "https://x.threatbook.com/v5/ip/{value}"
+    page_ready: ".summary-top"
+    intercepts: ["**/v5/node/**"]
+    sections:
+      - name: 威胁判定
+        selector: ".summary-top .result"
+        format: text
+      - name: 基础信息          # 情报更新/地理位置/运营商/场景 + 威胁标签 chips
+        selector: ".summary-top .basic-info"
+        format: blocks
+        blocks:
+          - {key: 情报更新, selector: ".info-item .time-info", strip: "情报更新"}
+          - {key: 地理位置, selector: ".info-item .location"}
+          - {key: 运营商,   selector: ".info-item span:not([class])"}
+          - {key: 场景,     selector: ".info-item .scene"}
+          - {key: 威胁标签, selector: ".tag-list .vb-tag-common", multiple: true}
+          - {key: 过期情报, selector: ".tag-list .summary-expired-intels"}
+      - name: 威胁概览
+        selector: ".basic-info"      # tr.count-info 分两行，取公共父容器拿全 8 项
+        format: kv
+        item_selector: ".count-item"   # .key + .value 结构（开放端口/相关样本/反查域名/ASN…）
+      - name: 情报洞察          # 分组（关联情报/身份归属/历史行为）× 特征 × 描述
+        selector: ".result-intelInsight_wrapper"
+        format: table
+        row_selector: ".result-intelInsight-item-line"
+        column_map:
+          分组: "xpath=ancestor::div[contains(@class,'result-intelInsight-item')]/div[1]"
+          特征: ".result-intelInsight-feature"
+          描述: ".result-intelInsight-feature-desc"
+      - name: 情报速递          # 微步情报/相关情报/开源情报/安全博客（domain 多社交媒体）
+        selector: ".result-page__clue"
+        format: table
+        row_selector: ".ant-collapse-item"
+        column_map:
+          来源: ".clue-type"
+          数量: ".count"
+          摘要: ".clue-max-width"
+      - name: 网页结果
+        click: "#analysisControllUl li.relate"   # r7 起显式点击（0 计数时默认面板不是它）
+        selector: ".pane-content"
+        format: table
+        row_selector: ".blog-item"
+        column_map:
+          标题: ".title"
+          摘要: ".desc"
+          链接: "a.url"
+          来源: ".count-and-info"
+      - name: 攻击画像
+        click: "#analysisControllUl li.controller-item:has-text('攻击画像')"
+        selector: ".pane-content .attack-protrait"
+        format: text           # 有数据样本 DOM 未采到（限频），结构后补；无数据显示「查询IP暂无攻击数据」
+      - name: 相关样本
+        click: "#analysisControllUl li.sample-controller"
+        selector: ".pane-content"
+        format: table
+      - name: 解析域名
+        click: "#analysisControllUl li.domain-controller"
+        selector: ".pane-content"
+        format: table
+      - name: 数字证书
+        click: "#analysisControllUl li.signature-controller"
+        selector: ".pane-content"
+        format: table
+        row_selector: ".signature-module .item"
+        column_map:
+          状态: "[class*='signature-item_reliability']"
+          证书信息: ".item-content"
+      - name: 资产测绘          # 历史开放端口 + 协议 两组 tag
+        click: "#analysisControllUl li.port-controller"
+        selector: ".pane-content"
+        format: blocks
+        blocks:
+          - {key: 历史开放端口, selector: ".ports:not(.history-ports) .items-box .items", multiple: true}
+          - {key: 协议,        selector: ".ports.history-ports .items-box .items", multiple: true}
+      - name: 端口详情          # 逐端口 banner/组件信息（同资产测绘 tab，复用点击，短等待）
+        click: "#analysisControllUl li.port-controller"
+        wait_ms: 800
+        selector: ".pane-content"
+        format: table
+        row_selector: ".curr-port-list .item-wrap"
+        column_map:
+          端口: ".curr-port-left-tags"
+          信息: ".txt-wrap"
+      - name: 用户标签          # 右栏标签云（标签 + 提及次数）；评论区已排除
+        selector: ".user-label-content-page .user-tag-list"
+        format: table
+        row_selector: ".x-comp-user-tag"
+        column_map:
+          标签: "self:head"
+          提及: "self:tail"
+  domain:
+    url_tpl: "https://x.threatbook.com/v5/domain/{value}"
+    page_ready: ".summary-top"
+    intercepts: ["**/v5/node/**"]
+    # 已按真实页面校准（2026-07-25，google.com / fget-career.com 实测 DOM）：布局同 ip；
+    # tab 差异：资产测绘用 .survey-controller（ip 为 .port-controller），
+    # 另有 域名解析(.domain-controller)/子域名(.subDomain-controller)/网站分析；
+    # 基础信息差异：无地理位置/场景，改排名徽章（Umbrella/Alexa）
+    sections:
+      - name: 威胁判定
+        selector: ".summary-top .result"
+        format: text
+      - name: 基础信息          # 情报更新 + 全球排名 + 威胁标签 chips
+        selector: ".summary-top .basic-info"
+        format: blocks
+        blocks:
+          - {key: 情报更新, selector: ".info-item .time-info", strip: "情报更新"}
+          - {key: 全球排名, selector: ".info-item .rank .ranking-box", multiple: true}
+          - {key: 威胁标签, selector: ".tag-list .vb-tag-common", multiple: true}
+          - {key: 过期情报, selector: ".tag-list .summary-expired-intels"}
+      - name: 威胁概览
+        selector: ".basic-info"
+        format: kv
+        item_selector: ".count-item"   # 解析IP数/子域名数/注册时间/域名服务商/ICP备案…
+      - name: 情报洞察
+        selector: ".result-intelInsight_wrapper"
+        format: table
+        row_selector: ".result-intelInsight-item-line"
+        column_map:
+          分组: "xpath=ancestor::div[contains(@class,'result-intelInsight-item')]/div[1]"
+          特征: ".result-intelInsight-feature"
+          描述: ".result-intelInsight-feature-desc"
+      - name: 情报速递
+        selector: ".result-page__clue"
+        format: table
+        row_selector: ".ant-collapse-item"
+        column_map:
+          来源: ".clue-type"
+          数量: ".count"
+          摘要: ".clue-max-width"
+      - name: 网页结果
+        click: "#analysisControllUl li.relate"   # r7 起显式点击（0 计数时默认面板不是它）
+        selector: ".pane-content"
+        format: table
+        row_selector: ".blog-item"
+        column_map:
+          标题: ".title"
+          摘要: ".desc"
+          链接: "a.url"
+          来源: ".count-and-info"
+      - name: 域名解析          # DNS 记录 kv：最近解析时间 + A/AAAA/NS/MX/TXT/SOA/CNAME
+        click: "#analysisControllUl li.domain-controller"
+        selector: ".pane-content .domain-current-resolve"
+        format: kv
+        item_selector: ".key-value-list.dns-info .items"   # 每条 .items 首行记录类型、其余为值
+        blocks:
+          - {key: 最近解析时间, selector: ".domain-current-resolve-dns-update-time", strip: "最近解析时间："}
+      - name: 最近解析IP        # .domain-current-resolve 内唯一表格（复用点击，短等待）
+        click: "#analysisControllUl li.domain-controller"
+        wait_ms: 800
+        selector: ".pane-content .domain-current-resolve"
+        format: table
+      - name: 历史解析IP        # .history-resolve 直接子级首个表格
+        click: "#analysisControllUl li.domain-controller"
+        wait_ms: 800
+        selector: ".pane-content .history-resolve > .x-antd-comp-spin-nested-loading"
+        format: table
+      - name: 历史解析记录      # 时间 × IP 表（.list 直接子级首个表；排除 解析总计 抽屉）
+        click: "#analysisControllUl li.domain-controller"
+        wait_ms: 800
+        selector: ".pane-content .history-resolve .list > .x-antd-comp-spin-nested-loading"
+        format: table
+      - name: WHOIS
+        click: "#analysisControllUl li.whois-controller"
+        selector: ".pane-content"
+        format: kv
+      - name: 子域名
+        click: "#analysisControllUl li.subDomain-controller"
+        selector: ".pane-content"
+        format: table
+      - name: 数字证书
+        click: "#analysisControllUl li.signature-controller"
+        selector: ".pane-content"
+        format: table
+        row_selector: ".signature-module .item"
+        column_map:
+          状态: "[class*='signature-item_reliability']"
+          证书信息: ".item-content"
+      - name: 相关样本
+        click: "#analysisControllUl li.sample-controller"
+        selector: ".pane-content"
+        format: table
+      - name: 资产测绘
+        click: "#analysisControllUl li.survey-controller"
+        selector: ".pane-content"
+        format: table
+      - name: 用户标签
+        selector: ".user-label-content-page .user-tag-list"
+        format: table
+        row_selector: ".x-comp-user-tag"
+        column_map:
+          标签: "self:head"
+          提及: "self:tail"
+  # file（样本哈希）：X 社区无 file 详情路由（/v5/file、/v5/sample 均 → notFound），
+  # 样本报告在云沙箱站 s.threatbook.com/report/file/{hash}（2026-07-25 实测，
+  # 会话 cookie 跨子域共享免登，各区块带语义化 id）。
+  # ⚠ sha256 为完整报告（沙箱动态检测/网络行为全）；md5/sha1 触发「正在分析中」
+  # 降级视图（仅多引擎检测等部分数据）；未收录哈希页面无 #summary → page_ready 超时。
+  # ⚠ 数据加载订正（2026-07-26 网络枚举 ti_data/recon/threatbook/s_xhr_log.json）：
+  # 报告页是 Next.js 静态壳 + 客户端 XHR（__NEXT_DATA__ 为空壳），数据接口约 25 个
+  # GET /apis/sample/{status,summary,signatures2,static,static-embed,multi_engines,
+  # memdump,dropped,process,network/{count,dns,domains,http,tcp,hosts},intelligence/*}/{hash}[-env]，
+  # 另有 /apis/skill/code-insights/{hash}。intercepts 拦全量供 raw；
+  # 早期"SSR 直出无 XHR"结论有误（当时 intercepts 为空未记录流量）。
+  # r8（2026-07-26，d16918f1…eb86 完整报告转储 dump_s_threatbook_com_1784947020.html）：
+  #   行为检测/静态分析/沙箱动态检测 由 text 平铺升级为结构化（CSS Module 类名用
+  #   [class*='styles_模块名__'] 前缀匹配，hash 后缀随平台构建变化不可硬编）：
+  #   - 行为检测 → table：listItem 行（分组 xpath 上溯 listWrapper 的兄弟 listTitle
+  #     取 可疑行为/通用行为，分类/描述/环境/明细各取 styles 子块，明细 ≤200 字符）
+  #   - 静态分析 → 基础信息+ExifTool/DIE/TrID/Magika 五组 kv（item 元素首行键）；
+  #     格式深度分析 → PE头信息/PE版本信息/签名信息 kv（itemWrapper 元素）+ 导入表/
+  #     PE节区/PE资源 table + 字符串/URLs text（wrapper 用 :has-text('标题') 区分同名 class）
+  #   - 沙箱动态检测 → kv blocks（分析环境 osItem 数组/执行流程 svg 文本/进程详情）；
+  #     内存文件 table（ant 表）；释放文件 空态 text
+  #   - 网络行为 拆 统计 kv（12 协议计数）+ 域名/DNS/HTTP/TCP/Hosts 五张协议表
+  #     （旧版整区块 <tr> 混抓/空文本；域名/DNS/Hosts 同 class 用 ':has-text(协议：)' 区分）
+  file:
+    url_tpl: "https://s.threatbook.com/report/file/{value}"
+    page_ready: "#summary"
+    intercepts: ["**/apis/sample/**", "**/apis/skill/**"]   # 沙箱报告数据接口（raw 来源）
+    sections:
+      - name: 样本概要          # 判定/文件名/大小/类型/HASH/引擎检出/分析环境/木马家族
+        selector: "#summary"
+        format: kv
+      - name: 情报IOC
+        selector: "#intelligenceIOC"
+        format: table
+      - name: 行为检测          # 签名列表：分组(可疑/通用) × 分类 × 描述 × 环境 × 明细
+        selector: "#behaviorDetection"
+        format: table
+        row_selector: "[class*='styles_listItem__']"
+        column_map:
+          分组: "xpath=ancestor::div[contains(@class,'styles_listWrapper__')]/preceding-sibling::div[contains(@class,'styles_listTitle__')][1]"
+          分类: "[class*='styles_signatureClass__']"
+          描述: "[class*='styles_desc__']"
+          环境: "[class*='styles_right__']"
+          明细: "[class*='styles_detailWrapper__']"
+      - name: 多引擎检测        # 检出率 + 各引擎结果表
+        selector: "#engineDetection"
+        format: table
+      # ── 静态分析（五组 kv）──
+      - name: 静态分析-基础信息  # 文件名/格式/Magic/大小/各哈希/Tags
+        selector: "#staticAnalysis [class*='styles_baseInfoWrapper__']"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      - name: 静态分析-ExifTool
+        selector: "#staticAnalysis [class*='styles_dataContentWrapper__']:has(> [class*='styles_title__']:text-is('ExifTool'))"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      - name: 静态分析-DIE      # 打包工具/编译器/链接器/工具/签名工具
+        selector: "#staticAnalysis [class*='styles_dataContentWrapper__']:has(> [class*='styles_title__']:text-is('DIE'))"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      - name: 静态分析-TrID     # 文件类型候选（百分比 → 描述）
+        selector: "#staticAnalysis [class*='styles_dataContentWrapper__']:has(> [class*='styles_title__']:text-is('TrID'))"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      - name: 静态分析-Magika
+        selector: "#staticAnalysis [class*='styles_dataContentWrapper__']:has(> [class*='styles_title__']:text-is('Magika'))"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      # ── 格式深度分析 ──
+      - name: 格式深度-PE头信息
+        selector: "#staticAnalysis [class*='styles_type1Wrapper__']:has-text('PE头信息')"
+        format: kv
+        item_selector: "[class*='styles_itemWrapper__']"
+      - name: 格式深度-PE版本信息
+        selector: "#staticAnalysis [class*='styles_type1Wrapper__']:has-text('PE版本信息')"
+        format: kv
+        item_selector: "[class*='styles_itemWrapper__']"
+      - name: 格式深度-签名信息  # tableRow 首行键（签名验证/签名者/会签者），值尾部「展开」为平台展开钮
+        selector: "#staticAnalysis [class*='styles_typeTableHeaderLeftWrapper__']"
+        format: kv
+        item_selector: "[class*='styles_tableRow__']"
+      - name: 格式深度-导入表    # tableBodyRow 行（函数名单元格在 expandWrapper 子行，不取）
+        selector: "#staticAnalysis [class*='styles_typeTableExpandWrapper__']"
+        format: table
+        row_selector: "[class*='styles_tableBodyRow__']"
+        column_map:
+          DLL: "xpath=./div[1]"
+          DLL描述: "xpath=./div[2]"
+          函数数量: "xpath=./div[3]"
+      - name: 格式深度-PE节区
+        selector: "#staticAnalysis [class*='styles_typeTableScrollWrapper__']:has-text('PE节区')"
+        format: table
+      - name: 格式深度-PE资源
+        selector: "#staticAnalysis [class*='styles_typeTableScrollWrapper__']:has-text('PE资源')"
+        format: table
+      - name: 格式深度-字符串    # Unicode/ASCII 字符串清单（天然文本形态）
+        selector: "#staticAnalysis [class*='styles_typeTableScrollWrapper__']:has-text('字符串')"
+        format: text
+      - name: 格式深度-URLs
+        selector: "#staticAnalysis [class*='styles_type1Wrapper__']:has-text('URLs')"
+        format: text
+      # ── 沙箱动态检测 ──
+      - name: 沙箱动态检测      # 环境/执行流程/进程详情（流程图为 svg，取其文本标签）
+        selector: "#dynamicAnalysis"
+        format: blocks
+        blocks:
+          - {key: 分析环境, selector: "[class*='styles_osItem__']", multiple: true}
+          - {key: 执行流程, selector: "[class*='styles_svgWrapper__']"}
+          - {key: 进程详情, selector: "[class*='styles_processFlowSection__']:has-text('进程详情') [class*='styles_contentData__']"}
+      - name: 内存文件
+        selector: "#dynamicAnalysis [class*='styles_releaseFilesWrapper__']:has-text('内存文件')"
+        format: table
+      - name: 释放文件          # 空态 text（如「无释放文件」）
+        selector: "#dynamicAnalysis [class*='styles_releaseFilesWrapper__']:has-text('释放文件')"
+        format: table
+      # ── 网络行为（按协议拆表；域名/DNS/Hosts 同 class 以标题文本区分）──
+      - name: 网络行为-统计      # 12 协议计数（域名/DNS/HTTP/TCP/Hosts/指纹/HTTPS/UDP/SMTP/ICMP/IRC/Dead-Hosts）
+        selector: "#networkBehavior [class*='styles_dataSummary__']"
+        format: kv
+        item_selector: "[class*='styles_item__']"
+      - name: 网络行为-域名
+        selector: "#networkBehavior [class*='styles_domainsWrapper__']:has-text('域名：')"
+        format: table
+      - name: 网络行为-DNS
+        selector: "#networkBehavior [class*='styles_domainsWrapper__']:has-text('DNS：')"
+        format: table
+      - name: 网络行为-HTTP
+        selector: "#networkBehavior [class*='styles_HttpWrapper__']"
+        format: table
+      - name: 网络行为-TCP
+        selector: "#networkBehavior [class*='styles_tcpWrapper__']"
+        format: table
+      - name: 网络行为-Hosts
+        selector: "#networkBehavior [class*='styles_domainsWrapper__']:has-text('Hosts：')"
+        format: table

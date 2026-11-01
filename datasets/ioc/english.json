@@ -1,0 +1,365 @@
+{
+  "name": "English NER Test Set",
+  "description": "Covers accounts, credentials, personnel info, devices, organizations, IPs, MACs, domains, abbreviations, etc.",
+  "labels": ["person", "email", "organization", "title", "phone", "account", "device", "ip address", "mac address", "domain", "abbreviation", "password", "location"],
+  "label_mapping": {
+    "person": "PERSON",
+    "email": "EMAIL",
+    "organization": "ORG",
+    "title": "TITLE",
+    "phone": "PHONE",
+    "account": "ACCOUNT",
+    "device": "DEVICE",
+    "ip address": "IP",
+    "mac address": "MAC",
+    "domain": "DOMAIN",
+    "abbreviation": "ABBR",
+    "password": "PASSWORD",
+    "location": "LOCATION",
+    "PERSON": "PERSON",
+    "GPE": "LOCATION",
+    "LOC": "LOCATION",
+    "ORG": "ORG",
+    "FAC": "LOCATION",
+    "person-other": "PERSON",
+    "person-artist": "PERSON",
+    "person-athlete": "PERSON",
+    "person-politician": "PERSON",
+    "person-scholar": "PERSON",
+    "organization-company": "ORG",
+    "organization-education": "ORG",
+    "organization-government": "ORG",
+    "organization-other": "ORG",
+    "location-GPE": "LOCATION",
+    "location-other": "LOCATION",
+    "product-software": "DEVICE",
+    "product-other": "DEVICE"
+  },
+  "samples": [
+    {
+      "text": "Administrator John Smith logged into 192.168.1.100 using the account admin with password Qwerty@2024 on the Cisco router.",
+      "entities": [
+        ["John Smith", "PERSON", 14, 24],
+        ["192.168.1.100", "IP", 37, 50],
+        ["admin", "ACCOUNT", 69, 74],
+        ["Qwerty@2024", "PASSWORD", 89, 100],
+        ["Cisco router", "DEVICE", 108, 120]
+      ]
+    },
+    {
+      "text": "Security Director Alice Wang at BlueShield Tech (email: alice.wang@blueshield.com, phone: +86-13912345678) manages the firewall at datacenter.blueshield.org.",
+      "entities": [
+        ["Security Director", "TITLE", 0, 18],
+        ["Alice Wang", "PERSON", 19, 29],
+        ["BlueShield Tech", "ORG", 33, 48],
+        ["alice.wang@blueshield.com", "EMAIL", 57, 82],
+        ["+86-13912345678", "PHONE", 91, 106],
+        ["firewall", "DEVICE", 120, 128],
+        ["datacenter.blueshield.org", "DOMAIN", 132, 157]
+      ]
+    },
+    {
+      "text": "The NovaSec Alliance (NSA-X) reported that the device with MAC address 00:1A:2B:3C:4D:5E was compromised via SSH.",
+      "entities": [
+        ["NovaSec Alliance", "ORG", 4, 20],
+        ["NSA-X", "ABBR", 22, 27],
+        ["00:1A:2B:3C:4D:5E", "MAC", 68, 85],
+        ["SSH", "ABBR", 106, 109]
+      ]
+    },
+    {
+      "text": "Network engineer Bob Chen at CloudPeak Inc. (WeChat: bob_chen_sec) discovered abnormal traffic from 10.0.0.50 targeting dns.cloudpeak.local.",
+      "entities": [
+        ["Network engineer", "TITLE", 0, 16],
+        ["Bob Chen", "PERSON", 17, 25],
+        ["CloudPeak Inc.", "ORG", 29, 43],
+        ["bob_chen_sec", "ACCOUNT", 54, 66],
+        ["10.0.0.50", "IP", 101, 110],
+        ["dns.cloudpeak.local", "DOMAIN", 121, 140]
+      ]
+    },
+    {
+      "text": "SkyNet Digital Corp issued a warning about a VPN vulnerability exploited against Huawei switches in the Beijing IDC.",
+      "entities": [
+        ["SkyNet Digital Corp", "ORG", 0, 19],
+        ["VPN", "ABBR", 46, 49],
+        ["Huawei switches", "DEVICE", 80, 95],
+        ["Beijing", "LOCATION", 103, 110],
+        ["IDC", "ABBR", 111, 114]
+      ]
+    },
+    {
+      "text": "CTO David Liu at YunHe Systems (employee ID: E20086, email: david.liu@yunhe.org, QQ: 99887766) oversees the cloud infrastructure at api.yunhe.io.",
+      "entities": [
+        ["CTO", "TITLE", 0, 3],
+        ["David Liu", "PERSON", 4, 13],
+        ["YunHe Systems", "ORG", 17, 30],
+        ["E20086", "ACCOUNT", 46, 52],
+        ["david.liu@yunhe.org", "EMAIL", 61, 80],
+        ["99887766", "ACCOUNT", 86, 94],
+        ["api.yunhe.io", "DOMAIN", 131, 143]
+      ]
+    },
+    {
+      "text": "Audit found user jsmith using weak password P@ssw0rd on the core switch 172.16.0.1 with MAC 11:22:33:44:55:66.",
+      "entities": [
+        ["jsmith", "ACCOUNT", 17, 23],
+        ["P@ssw0rd", "PASSWORD", 45, 53],
+        ["core switch", "DEVICE", 61, 72],
+        ["172.16.0.1", "IP", 73, 83],
+        ["11:22:33:44:55:66", "MAC", 93, 110]
+      ]
+    },
+    {
+      "text": "Deputy Manager Liu Yang at RuiAn Technologies (phone: 15912345678) found that bastion host 10.10.20.30 was brute-forced with password Test!@#456.",
+      "entities": [
+        ["Deputy Manager", "TITLE", 0, 14],
+        ["Liu Yang", "PERSON", 15, 22],
+        ["RuiAn Technologies", "ORG", 26, 44],
+        ["15912345678", "PHONE", 53, 64],
+        ["bastion host", "DEVICE", 77, 89],
+        ["10.10.20.30", "IP", 90, 101],
+        ["Test!@#456", "PASSWORD", 130, 140]
+      ]
+    },
+    {
+      "text": "Senior Engineer Sun Li from DingXin Software Lab (DingTalk: sunli_dev) deployed NAS storage devices in the Shenzhen datacenter.",
+      "entities": [
+        ["Senior Engineer", "TITLE", 0, 15],
+        ["Sun Li", "PERSON", 16, 22],
+        ["DingXin Software Lab", "ORG", 28, 48],
+        ["sunli_dev", "ACCOUNT", 59, 68],
+        ["NAS", "ABBR", 79, 82],
+        ["Shenzhen", "LOCATION", 108, 116]
+      ]
+    },
+    {
+      "text": "Security officer Zhou Lei at MingYuan Telecom detected MAC 11:22:33:44:55:66 on a wireless AP sending requests to api.mingyuan.net.",
+      "entities": [
+        ["Security officer", "TITLE", 0, 16],
+        ["Zhou Lei", "PERSON", 17, 25],
+        ["MingYuan Telecom", "ORG", 29, 45],
+        ["11:22:33:44:55:66", "MAC", 59, 76],
+        ["wireless AP", "DEVICE", 82, 93],
+        ["api.mingyuan.net", "DOMAIN", 115, 131]
+      ]
+    },
+    {
+      "text": "Operations Director Wu Qiang at HuaChuang Data Center (email: wuqiang@huachuang.com, phone: 021-55667788) manages all servers in the Shanghai campus.",
+      "entities": [
+        ["Operations Director", "TITLE", 0, 20],
+        ["Wu Qiang", "PERSON", 21, 29],
+        ["HuaChuang Data Center", "ORG", 33, 54],
+        ["wuqiang@huachuang.com", "EMAIL", 63, 84],
+        ["021-55667788", "PHONE", 93, 105],
+        ["Shanghai", "LOCATION", 131, 139]
+      ]
+    },
+    {
+      "text": "A security scan revealed that the IIS service on 192.168.50.200 has a weak password Admin@888 and needs immediate remediation.",
+      "entities": [
+        ["IIS", "ABBR", 40, 43],
+        ["192.168.50.200", "IP", 55, 69],
+        ["Admin@888", "PASSWORD", 90, 99]
+      ]
+    },
+    {
+      "text": "Chief Architect Zheng Tao at ZiGuang Cloud Institute (ZGCI) deployed an SDN controller in Guangzhou, managed at sdn.ziguang.local.",
+      "entities": [
+        ["Chief Architect", "TITLE", 0, 15],
+        ["Zheng Tao", "PERSON", 16, 25],
+        ["ZiGuang Cloud Institute", "ORG", 29, 52],
+        ["ZGCI", "ABBR", 54, 58],
+        ["SDN", "ABBR", 72, 75],
+        ["Guangzhou", "LOCATION", 91, 100],
+        ["sdn.ziguang.local", "DOMAIN", 114, 132]
+      ]
+    },
+    {
+      "text": "Penetration tester He Xin at Galaxy InfoSec Corp used Nmap to scan the 10.20.0.0/24 subnet and found exposed printers.",
+      "entities": [
+        ["Penetration tester", "TITLE", 0, 18],
+        ["He Xin", "PERSON", 19, 25],
+        ["Galaxy InfoSec Corp", "ORG", 29, 48],
+        ["Nmap", "ABBR", 54, 58],
+        ["10.20.0.0/24", "IP", 72, 84],
+        ["printers", "DEVICE", 106, 114]
+      ]
+    },
+    {
+      "text": "Project Manager Ma Chao at ChangFeng NetTech (Feishu: machao_cf) maintains the ERP system on server 172.31.1.10.",
+      "entities": [
+        ["Project Manager", "TITLE", 0, 15],
+        ["Ma Chao", "PERSON", 16, 23],
+        ["ChangFeng NetTech", "ORG", 27, 44],
+        ["machao_cf", "ACCOUNT", 54, 63],
+        ["ERP", "ABBR", 80, 83],
+        ["172.31.1.10", "IP", 101, 112]
+      ]
+    },
+    {
+      "text": "Audit logs show user root logged into the core switch 192.168.100.1 in Chengdu with password Changeme! and MAC DE:AD:BE:EF:00:01.",
+      "entities": [
+        ["root", "ACCOUNT", 21, 25],
+        ["core switch", "DEVICE", 45, 56],
+        ["192.168.100.1", "IP", 57, 70],
+        ["Chengdu", "LOCATION", 74, 81],
+        ["Changeme!", "PASSWORD", 96, 105],
+        ["DE:AD:BE:EF:00:01", "MAC", 114, 131]
+      ]
+    },
+    {
+      "text": "Security Researcher Lin Xiaoyu at JiuZhou Cloud Security Lab (email: linxy@jiuzhou-sec.cn) discovered a zero-day vulnerability affecting HTTPS.",
+      "entities": [
+        ["Security Researcher", "TITLE", 0, 19],
+        ["Lin Xiaoyu", "PERSON", 20, 30],
+        ["JiuZhou Cloud Security Lab", "ORG", 34, 60],
+        ["linxy@jiuzhou-sec.cn", "EMAIL", 69, 89],
+        ["HTTPS", "ABBR", 137, 142]
+      ]
+    },
+    {
+      "text": "CTO Huang Hai at TianGong Smart Systems (phone: 18600001111, WeChat: huanghai_tg) launched a GPU server cluster in the Hangzhou datacenter.",
+      "entities": [
+        ["CTO", "TITLE", 0, 3],
+        ["Huang Hai", "PERSON", 4, 13],
+        ["TianGong Smart Systems", "ORG", 17, 38],
+        ["18600001111", "PHONE", 47, 58],
+        ["huanghai_tg", "ACCOUNT", 68, 79],
+        ["GPU server", "DEVICE", 93, 103],
+        ["Hangzhou", "LOCATION", 123, 131]
+      ]
+    },
+    {
+      "text": "Admin Xu Wenqiang at PanGu Data Platform changed the FTP server ftp.pangu.local default password from ftp123 to Ft9$kL2m!x.",
+      "entities": [
+        ["Admin", "TITLE", 0, 5],
+        ["Xu Wenqiang", "PERSON", 6, 17],
+        ["PanGu Data Platform", "ORG", 21, 40],
+        ["FTP", "ABBR", 53, 56],
+        ["ftp.pangu.local", "DOMAIN", 64, 79],
+        ["ftp123", "PASSWORD", 105, 111],
+        ["Ft9$kL2m!x", "PASSWORD", 115, 125]
+      ]
+    },
+    {
+      "text": "Security Chief Qian Jin at ChaoYang Digital Group (QQ: 12345678) detected SQL injection attacks from external IP 203.0.113.55.",
+      "entities": [
+        ["Security Chief", "TITLE", 0, 14],
+        ["Qian Jin", "PERSON", 15, 23],
+        ["ChaoYang Digital Group", "ORG", 27, 49],
+        ["12345678", "ACCOUNT", 55, 63],
+        ["SQL", "ABBR", 74, 77],
+        ["203.0.113.55", "IP", 115, 127]
+      ]
+    },
+    {
+      "text": "YuanHang Cloud Services built a new datacenter in Wuhan with Ruijie routers and Sangfor firewalls, managed at dc.yuanhang.net.",
+      "entities": [
+        ["YuanHang Cloud Services", "ORG", 0, 23],
+        ["Wuhan", "LOCATION", 51, 56],
+        ["Ruijie routers", "DEVICE", 62, 76],
+        ["Sangfor firewalls", "DEVICE", 81, 98],
+        ["dc.yuanhang.net", "DOMAIN", 111, 126]
+      ]
+    },
+    {
+      "text": "Security Engineer Han Meimei (email: hanmm@qianfeng.com, phone: 13700137000) found a backdoor in the camera with MAC CC:DD:EE:FF:00:11.",
+      "entities": [
+        ["Security Engineer", "TITLE", 0, 17],
+        ["Han Meimei", "PERSON", 18, 28],
+        ["hanmm@qianfeng.com", "EMAIL", 37, 55],
+        ["13700137000", "PHONE", 64, 75],
+        ["camera", "DEVICE", 105, 111],
+        ["CC:DD:EE:FF:00:11", "MAC", 121, 138]
+      ]
+    },
+    {
+      "text": "QiMing Data Security Center (QMSC) issued an advisory about SNMP weak password community affecting network devices nationwide.",
+      "entities": [
+        ["QiMing Data Security Center", "ORG", 0, 27],
+        ["QMSC", "ABBR", 29, 33],
+        ["SNMP", "ABBR", 61, 65],
+        ["community", "PASSWORD", 81, 90]
+      ]
+    },
+    {
+      "text": "Sysadmin Yang Fan at LingYun Tech logged into Windows server 192.168.200.10 via RDP, domain erp.lingyun.local.",
+      "entities": [
+        ["Sysadmin", "TITLE", 0, 8],
+        ["Yang Fan", "PERSON", 9, 17],
+        ["LingYun Tech", "ORG", 21, 33],
+        ["192.168.200.10", "IP", 60, 74],
+        ["RDP", "ABBR", 79, 82],
+        ["erp.lingyun.local", "DOMAIN", 91, 109]
+      ]
+    },
+    {
+      "text": "Deputy Director Lu Tao at BoYuan InfoTech Institute (DingTalk: lutao_boyuan, phone: 010-88889999) led the acceptance of the new IDS system.",
+      "entities": [
+        ["Deputy Director", "TITLE", 0, 15],
+        ["Lu Tao", "PERSON", 16, 22],
+        ["BoYuan InfoTech Institute", "ORG", 26, 51],
+        ["lutao_boyuan", "ACCOUNT", 63, 75],
+        ["010-88889999", "PHONE", 84, 96],
+        ["IDS", "ABBR", 131, 134]
+      ]
+    },
+    {
+      "text": "Intern Xiao Zhang at WeiYuan CyberSec accidentally wrote test password Test1234 into the production Nginx config for web.weiyuan.cn.",
+      "entities": [
+        ["Intern", "TITLE", 0, 6],
+        ["Xiao Zhang", "PERSON", 7, 17],
+        ["WeiYuan CyberSec", "ORG", 21, 37],
+        ["Test1234", "PASSWORD", 63, 71],
+        ["Nginx", "DEVICE", 92, 97],
+        ["web.weiyuan.cn", "DOMAIN", 109, 123]
+      ]
+    },
+    {
+      "text": "CSO Bai Jie at HongMeng Data Group (email: baijie@hongmeng-data.com) held a WAF deployment meeting at the Chongqing headquarters.",
+      "entities": [
+        ["CSO", "TITLE", 0, 3],
+        ["Bai Jie", "PERSON", 4, 11],
+        ["HongMeng Data Group", "ORG", 15, 34],
+        ["baijie@hongmeng-data.com", "EMAIL", 43, 67],
+        ["WAF", "ABBR", 76, 79],
+        ["Chongqing", "LOCATION", 105, 114]
+      ]
+    },
+    {
+      "text": "TianDun Cloud Protection detected IP 198.51.100.23 launching a DDoS attack against portal.tiandun.net targeting the load balancer.",
+      "entities": [
+        ["TianDun Cloud Protection", "ORG", 0, 24],
+        ["198.51.100.23", "IP", 37, 50],
+        ["DDoS", "ABBR", 63, 67],
+        ["portal.tiandun.net", "DOMAIN", 83, 101],
+        ["load balancer", "DEVICE", 117, 130]
+      ]
+    },
+    {
+      "text": "Senior Consultant Feng Xue at LongTeng InfoSec (WeChat: fengxue_lt, QQ: 55443322) helped fix an LDAP config flaw on server 10.100.1.5.",
+      "entities": [
+        ["Senior Consultant", "TITLE", 0, 17],
+        ["Feng Xue", "PERSON", 18, 26],
+        ["LongTeng InfoSec", "ORG", 30, 46],
+        ["fengxue_lt", "ACCOUNT", 56, 66],
+        ["55443322", "ACCOUNT", 72, 80],
+        ["LDAP", "ABBR", 97, 101],
+        ["10.100.1.5", "IP", 125, 135]
+      ]
+    },
+    {
+      "text": "IT Manager Zhao Ming at XingHe Cloud Corp (email: zhaoming@xinghe.cn, phone: 0755-12345678) upgraded the Juniper firewall firmware in Nanjing.",
+      "entities": [
+        ["IT Manager", "TITLE", 0, 10],
+        ["Zhao Ming", "PERSON", 11, 20],
+        ["XingHe Cloud Corp", "ORG", 24, 41],
+        ["zhaoming@xinghe.cn", "EMAIL", 50, 68],
+        ["0755-12345678", "PHONE", 77, 90],
+        ["Juniper firewall", "DEVICE", 108, 124],
+        ["Nanjing", "LOCATION", 137, 144]
+      ]
+    }
+  ]
+}

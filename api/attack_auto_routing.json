@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "model": "tram",
+      "metric": "english_ratio",
+      "operator": "gte",
+      "threshold": 0.95
+    },
+    {
+      "model": "qwen3-attack-retriever",
+      "metric": "chinese_ratio",
+      "operator": "gte",
+      "threshold": 0.6
+    }
+  ],
+  "fallback_model": "qwen3-attack-retriever"
+}

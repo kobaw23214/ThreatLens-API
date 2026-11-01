@@ -1,0 +1,1208 @@
+{
+  "name": "Chinese ATT&CK Test Set (human-translated from TRAM bootstrap)",
+  "source": "datasets/attack_tram_bootstrap.json",
+  "note": "每个技术分层抽样 2 句(共 50 技术),人工翻译为简体中文,attack_id 保持不变。",
+  "sentence_count": 100,
+  "sentences": [
+    {
+      "text": "攻击者还远程在多台工作站上投放了 procdump.exe 和 procdump64.exe,并转储了 LSASS,",
+      "text_en": "Threat actors also dropped procdump.exe and procdump64.exe on multiple workstations remotely, dumped LSASS,",
+      "order": 0,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1003.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "攻击者使用 Mimikatz 抓取凭据。",
+      "text_en": "The actors used Mimikatz to harvest credentials.",
+      "order": 1,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1003.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够从被攻陷的主机上传日志和其他数据。",
+      "text_en": "can upload logs and other data from a compromised host.",
+      "order": 2,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已从受害者的本地系统收集数据。",
+      "text_en": "has collected data from victims' local systems.",
+      "order": 3,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "枚举与事件日志相关的注册表键。",
+      "text_en": "enumerates Registry keys associated with event logs.",
+      "order": 4,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1012",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "使用 regkeyenum 命令枚举注册表键,并获取注册表键 HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run 的信息。",
+      "text_en": "enumerates registry keys with the command regkeyenum and obtains information for the Registry key HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run.",
+      "order": 5,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1012",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够识别被攻陷主机所在的域。",
+      "text_en": "can identify the domain of the compromised host.",
+      "order": 6,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1016",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够收集受害者的 IP 地址。",
+      "text_en": "can collect the victims IP address.",
+      "order": 7,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1016",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "随后他们建立了一条回到主域控制器的 RDP 连接",
+      "text_en": "They then opened an RDP connection back to the primary domain controller",
+      "order": 8,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1021.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "在整个行动过程中使用了 RDP。",
+      "text_en": "utilized RDP throughout an operation.",
+      "order": 9,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1021.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "内嵌的 .NET 注入器和 PE 载荷。",
+      "text_en": "the embedded .NET injector and PE payload(s).",
+      "order": 10,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1027",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "将勒索软件存放在 7zip 加密压缩包中",
+      "text_en": "Storing the ransomware within a 7zip encrypted archive",
+      "order": 11,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1027",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已从受害者机器上收集用户名。",
+      "text_en": "has collected the username from a victim machine.",
+      "order": 12,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1033",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "从受害者处收集当前用户名。",
+      "text_en": "collects the current username from the victim.",
+      "order": 13,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1033",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "这些看起来是被恶意打过补丁的合法 ffmpeg.dll 版本",
+      "text_en": "these appear to be maliciously patched versions of the legitimate ffmpeg.dll",
+      "order": 14,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1036.005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "被命名为 `calc.exe`,以伪装成合法的计算器程序。",
+      "text_en": "has been named `calc.exe` to appear as a legitimate calculator program.",
+      "order": 15,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1036.005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "攻击者利用命令与控制通道窃取少量数据。",
+      "text_en": "The adversary uses the command and control channel to exfiltrate small amounts of data.",
+      "order": 16,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1041",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "执行之后,命令的输出会被上传。",
+      "text_en": "After execution, the output of commands is uploaded.",
+      "order": 17,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1041",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "在启动 WMI 服务时",
+      "text_en": "upon initiation of the WMI service",
+      "order": 18,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1047",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "基于端口,从一个端点向目标端点通过 DCERPC 发送了若干 WMI 请求。",
+      "text_en": "a number of WMI requests via DCERPC from one endpoint to a target endpoint based on the ports.",
+      "order": 19,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1047",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "恶意软件创建了一个名为 IE Web Cache 的计划任务,每小时执行一次恶意文件。",
+      "text_en": "malware creates a scheduled task entitled IE Web Cache to execute a malicious file hourly.",
+      "order": 20,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1053.005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "利用计划任务来添加持久化。",
+      "text_en": "has used scheduled tasks to add persistence.",
+      "order": 21,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1053.005",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "反射式 PE 注入",
+      "text_en": "Reflective PE injection",
+      "order": 22,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1055",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够启动一个新的 `svchost` 进程并向其中注入代码。",
+      "text_en": "can start and inject code into a new `svchost` process.",
+      "order": 23,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1055",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "该键盘记录工具被配置为捕获击键并记录到 C:\\ProgramData\\psh\\System32Log.txt。",
+      "text_en": "The keylogging utility was configured\nto capture and record keystrokes to C:\\ProgramData\\psh\\System32Log.txt.",
+      "order": 24,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1056.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "从受害者机器收集击键记录。",
+      "text_en": "collects keystrokes from the victims machine.",
+      "order": 25,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1056.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够收集正在运行的进程列表。",
+      "text_en": "can gather a list of running processes by using .",
+      "order": 26,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1057",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够枚举目标系统上的进程。",
+      "text_en": "can enumerate processes on a target system.",
+      "order": 27,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1057",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够通过命令行工具执行命令。",
+      "text_en": "can execute commands via the command line utility.",
+      "order": 28,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1059.003",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "所提供的命令行参数",
+      "text_en": "the command line argument\nprovided",
+      "order": 29,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1059.003",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已利用 CVE-2019-0803 和 MS16-032 提升权限。",
+      "text_en": "has exploited CVE-2019-0803 and MS16-032 to escalate privileges.",
+      "order": 30,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1068",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够利用诸如 MS14-058 之类的漏洞。",
+      "text_en": "can exploit vulnerabilities such as MS14-058.",
+      "order": 31,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1068",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "如果安装/卸载组件遇到早于 Windows XP 的 Windows 版本,或发现有安全相关进程在运行,便会自我删除。",
+      "text_en": "installer/uninstaller component deletes itself if it encounters a version of Windows earlier than Windows XP or identifies security-related processes running.",
+      "order": 32,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1070.004",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "具备删除文件的能力。",
+      "text_en": "has the ability to delete files.",
+      "order": 33,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1070.004",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "使用基于 HTTP 或 HTTPS 的 GET 和 POST 请求进行命令与控制,以获取命令并将经 ZLIB 压缩的数据回传到 C2 服务器。",
+      "text_en": "uses GET and POST requests over HTTP or HTTPS for command and control to obtain commands and send ZLIB compressed data back to the C2 server.",
+      "order": 34,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1071.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "从某 IP 地址到该组织 VMware 服务器的 HTTPS 活动。",
+      "text_en": "HTTPS activity from IP address  to the organization’s VMware server.",
+      "order": 35,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1071.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "据信,攻击者利用了目标公司中普遍安装的某防病毒产品的补丁管理系统来分发该恶意软件。",
+      "text_en": "It is believed that a patch management system for an anti-virus product commonly installed among targeted companies was used to distribute the  malware.",
+      "order": 36,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1072",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "利用 Splashtop 传输 netscan.exe、netscan.lic、netscan.xml、newuser.bat、start.bat 和 turnoff.bat。",
+      "text_en": "utilize Splashtop to transfer netscan.exe, netscan.lic, netscan.xml, newuser.bat, start.bat and turnoff.bat.",
+      "order": 37,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1072",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够在 TEMP 文件夹中创建文件,作为数据库来存储信息。",
+      "text_en": "has the ability to create files in a TEMP folder to act as a database to store information.",
+      "order": 38,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1074.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够在外传之前将采集到的系统信息存储在本地。",
+      "text_en": "can store captured system information locally prior to exfiltration.",
+      "order": 39,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1074.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "这一配置错误使该团队得以利用被钓鱼用户的低权限访问,横向移动到一台无约束委派主机,并攻陷整个域。",
+      "text_en": "This misconfiguration allowed the team to use the low-level access of a phished user to move laterally to an Unconstrained Delegation host and compromise the entire domain.",
+      "order": 40,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1078",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "攻击者使用有效账户直接登录",
+      "text_en": "the adversary used the valid account to directly login",
+      "order": 41,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1078",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "初始信标数据包中包含受害者的操作系统版本和文件系统信息。",
+      "text_en": "The initial beacon packet for  contains the operating system version and file system of the victim.",
+      "order": 42,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1082",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够识别目标系统的操作系统版本。",
+      "text_en": "can identify the OS version of a targeted system.",
+      "order": 43,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1082",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "枚举桌面上的文件",
+      "text_en": "Enumerate files on desktop",
+      "order": 44,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1083",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够运行命令以获取文件和目录列表,并枚举逻辑驱动器。",
+      "text_en": "is capable of running commands to obtain a list of files and directories as well as enumerating logical drives.",
+      "order": 45,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1083",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "该团队使用域前置来伪装出站流量,以使持久信标所通信的域名更加多样化。",
+      "text_en": "The team used domain fronting to disguise outbound traffic in order to diversify the domains with which the persistent beacons were communicating.",
+      "order": 46,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1090",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "代理/隧道工具(HTran、LCX、EarthWorm",
+      "text_en": "proxy/tunneling utilities (HTran, LCX, EarthWorm",
+      "order": 47,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1090",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用 ICMP 从目标服务器接收信息。",
+      "text_en": "can use ICMP to receive information on the destination server.",
+      "order": 48,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1095",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用 TCP 与命令控制服务器通信。",
+      "text_en": "can use TCP to communicate with command and control servers.",
+      "order": 49,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1095",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已执行 PowerShell 命令,将文件下载到系统中。",
+      "text_en": "has executed a PowerShell command to download a file to the system.",
+      "order": 50,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1105",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够将额外的文件下载到受感染的系统上。",
+      "text_en": "can download additional files onto the infected system.",
+      "order": 51,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1105",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用原生 API(Native API)进行防御规避、发现和收集。",
+      "text_en": "can use Native API for defense evasion discovery and collection.",
+      "order": 52,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1106",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "使用相同的 DeviceControl API 方法",
+      "text_en": "use of the same DeviceControl API methods",
+      "order": 53,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1106",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "破解浏览器中的敏感信息(如密码)",
+      "text_en": "cracking browser sensitive information like passwords",
+      "order": 54,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1110",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "凭据窃取与密码喷洒",
+      "text_en": "Credential theft and password spraying",
+      "order": 55,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1110",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用 wdigest 创建注册表键。",
+      "text_en": "can create a registry key using wdigest.",
+      "order": 56,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1112",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "ConsentPromptBehaviorAdmin 键被设置为“0”,表明针对需要管理员权限操作的同意提示行为已被修改",
+      "text_en": "The ConsentPromptBehaviorAdmin key has been set to “0”, indicating that the behavior of the consent prompt for actions requiring administrator privileges has been modified",
+      "order": 57,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1112",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够截取屏幕截图。",
+      "text_en": "can take screenshots.",
+      "order": 58,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1113",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "具备捕获屏幕截图的能力。",
+      "text_en": "has the ability to capture screenshots.",
+      "order": 59,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1113",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "对配置数据和模块进行解码。",
+      "text_en": "decodes the configuration data and modules.",
+      "order": 60,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1140",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "用于解密配置文件。",
+      "text_en": "to decrypt the configuration file.",
+      "order": 61,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1140",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "可利用面向互联网的应用与系统漏洞(例如 PrintNightmare(CVE-2021-1675)和(CVE-2021-34527))来获取初始访问权限。",
+      "text_en": "Internet-facing applications and systems vulnerabilities can be exploited, such as PrintNightmare (CVE-2021-1675) and (CVE-2021-34527), to gain initial access.",
+      "order": 62,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1190",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "利用存在漏洞的面向 Web 的设备",
+      "text_en": "exploiting vulnerable web-facing devices",
+      "order": 63,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1190",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "在点击该图片时,受害者会在不知情的情况下下载一个恶意 JavaScript 文件",
+      "text_en": "In clicking the photo, the victim unknowingly downloads a malicious JavaScript file that",
+      "order": 64,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1204.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "点击该 LNK 文件会执行批处理文件",
+      "text_en": "Clicking on the LNK file executes the batch file",
+      "order": 65,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1204.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "具备通过著名的“永恒之蓝”(EternalBlue)漏洞利用 SMBv1 的能力。",
+      "text_en": "has the capability to exploit SMBv1 via the well known EternalBlue exploit.",
+      "order": 66,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1210",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "攻击者使用有效账户登录专门用于接受远程连接的服务,例如 telnet、SSH、RDP 和虚拟网络计算(VNC)。",
+      "text_en": "cyber actors used valid accounts to log into a service specifically designed to accept remote connections, such as telnet, SSH, RDP, and Virtual Network Computing (VNC).",
+      "order": 67,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1210",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "在注册表 Run 键值中使用 rundll32.exe 来执行,作为其持久化机制的一部分。",
+      "text_en": "uses rundll32.exe in a Registry Run key value for execution as part of its persistence mechanism.",
+      "order": 68,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1218.011",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "利用 rundll32 加载恶意 DLL。",
+      "text_en": "has used rundll32 to load malicious DLLs.",
+      "order": 69,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1218.011",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已知会使用诸如 SystemBC 之类的工具以及专有后门",
+      "text_en": "Tools such as SystemBC and proprietary backdoors are known to be used",
+      "order": 70,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1219",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "安装合法的远程访问工具,如 RPort、Ligolo 和 eHorus",
+      "text_en": "Installing legitimate remote access tools, such as RPort, Ligolo and eHorus",
+      "order": 71,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1219",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "他们通过修改组策略禁用了 Windows Defender。",
+      "text_en": "they disabled Windows Defender via a group policy modification.",
+      "order": 72,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1484.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "创建一条组策略",
+      "text_en": "creates a group policy",
+      "order": 73,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1484.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已检查系统中是否存在卡巴斯基(Kaspersky)杀毒软件。",
+      "text_en": "has checked for the existence of Kaspersky antivirus software on the system.",
+      "order": 74,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1518.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "在其持久化过程中会检查是否存在杀毒软件。",
+      "text_en": "has checked for AV software as part of its persistence process.",
+      "order": 75,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1518.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够安装一个新服务。",
+      "text_en": "can install a new service.",
+      "order": 76,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1543.003",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "随后创建了一个服务",
+      "text_en": "service is then created",
+      "order": 77,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1543.003",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "一种 HTTP 恶意软件变种通过设置注册表键 HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Windows Debug Tools-%LOCALAPPDATA%\\ 来建立持久化。",
+      "text_en": "An  HTTP malware variant establishes persistence by setting the Registry key HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Windows Debug Tools-%LOCALAPPDATA%\\.",
+      "order": 78,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1547.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "创建指向落盘恶意可执行文件的 Run 键注册表项。",
+      "text_en": "creates run key Registry entries pointing to a malicious executable dropped to disk.",
+      "order": 79,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1547.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用多种已知技术绕过 Windows UAC。",
+      "text_en": "can use a number of known techniques to bypass Windows UAC.",
+      "order": 80,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1548.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "该 CAB 文件包含以下文件和功能:dll:一个用于启动批处理文件的恶意 DLL(与 cliconfg.exe 配合用于绕过 UAC)",
+      "text_en": "The CAB file contains the following files and functions:  dll: A malicious DLL used to launch batch files (used with cliconfg.exe for UAC bypass)",
+      "order": 81,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1548.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "访问浏览器凭据和 Cookie,以及 Thunderbird 和 Outlook 配置文件",
+      "text_en": "accessing browser credentials and cookies, Thunderbird and Outlook profiles",
+      "order": 82,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1552.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够从本地机器收集诸如 Azure AD Connect 等 Azure AD 服务的未加保护凭据。",
+      "text_en": "can gather unsecured credentials for Azure AD services such as Azure AD Connect from a local machine.",
+      "order": 83,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1552.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "对名称服务进行投毒",
+      "text_en": "poison name services",
+      "order": 84,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1557.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "这促使域控制器使用该服务器的 NTLM 哈希向 SharePoint 服务器进行认证。随后该团队部署 Rubeus 来捕获传入的域控 TGT",
+      "text_en": "which prompted DC authentication to the SharePoint server using the server’s NTLM hash. The team then deployed Rubeus to capture the incoming DC TGT",
+      "order": 85,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1557.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够禁用 SELinux 基于角色的访问控制,并停用 PAM 模块。",
+      "text_en": "can disable SELinux Role-Based Access Control and deactivate PAM modules.",
+      "order": 86,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1562.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "能够使用原生的 spctl 程序禁用 Gatekeeper。",
+      "text_en": "can disable Gatekeeper using the native spctl application.",
+      "order": 87,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1562.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "通常会将文件和路径属性设置为隐藏。",
+      "text_en": "has commonly set file and path attributes to hidden.",
+      "order": 88,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1564.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "具备隐藏和取消隐藏文件的能力。",
+      "text_en": "has the ability to hide and unhide files.",
+      "order": 89,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1564.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "安全研究人员评估认为,攻击者很可能通过一次钓鱼活动向受害者分发武器化附件。",
+      "text_en": "For  security researchers assessed the threat actors likely used a phishing campaign to distribute a weaponized attachment to victims.",
+      "order": 90,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1566.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "利用鱼叉式钓鱼,试图诱骗受害者打开恶意文档",
+      "text_en": "leverages spear-phishing and tries to trick the victims into opening malicious documents",
+      "order": 91,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1566.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "分别通过 SMB 和创建 Windows 服务,在多台目标工作站上执行载荷。",
+      "text_en": "execute a payload via SMB and Windows Service Creation, respectively, on several target Workstations.",
+      "order": 92,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1569.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "微软 Sysinternals 是一款常用的管理工具,可通过临时 Windows 服务在远程系统上执行二进制文件。",
+      "text_en": "Microsoft Sysinternals  is a popular administration tool that can be used to execute binaries on remote systems using a temporary Windows service.",
+      "order": 93,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1569.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "通过 SMB 横向传输其中一个 Atera Agent MSI 安装包(1.msi),用于在主机上横向获取访问权限,并为后续访问提供持久化。",
+      "text_en": "the SMB lateral transfer of one of the Atera Agent MSI installers (1.msi) used to gain access laterally on a host and provide persistence for later access.",
+      "order": 94,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1570",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "已使用横向工具传输将工具和文件从一个被攻陷系统转移到另一个系统,包括通过 SMB 和 RDP。",
+      "text_en": "Lateral tool transfers have been used to move tools and files from one compromised system to another, including SMB and RDP.",
+      "order": 95,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1570",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "使用 XOR 密钥对发送到 C2 服务器的数据进行加密。",
+      "text_en": "has encrypted data sent to the C2 server using a XOR key.",
+      "order": 96,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1573.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "使用 AES 加密 C2 流量。",
+      "text_en": "uses AES to encrypt C2 traffic.",
+      "order": 97,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1573.001",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "程序首先侧加载 u2ec.dll,随后由其加载载荷文件 usb.ini",
+      "text_en": "program first sideloads u2ec.dll, which then loads the payload file usb.ini",
+      "order": 98,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1574.002",
+          "confidence": "100.0"
+        }
+      ]
+    },
+    {
+      "text": "恶意软件 rzlog4cpp.dll 被侧加载",
+      "text_en": "malware rzlog4cpp.dll is sideloaded",
+      "order": 99,
+      "disposition": "accept",
+      "mappings": [
+        {
+          "attack_id": "T1574.002",
+          "confidence": "100.0"
+        }
+      ]
+    }
+  ]
+}

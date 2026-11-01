@@ -1,0 +1,55 @@
+# ThreatLens-API 本地 Docker 部署
+# 按项目原设计:镜像只含依赖,代码/前端/配置/模型/会话全部运行时挂载
+#   → 改代码只需重启容器,不用重打镜像(仅 requirements.txt 变化才 rebuild)
+# 数据库:独立 postgres(原计划复用 langfuse-postgres-1,但该容器在部署中途被移除,
+#   改为自带实例,数据落在命名卷 threatlens_pgdata,不受其他栈影响)
+
+services:
+  db:
+    image: postgres:17
+    container_name: threatlens-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ner_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${TL_DB_PASSWORD}
+    volumes:
+      - threatlens_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ner_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    image: ner-api:runtime
+    container_name: ner-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8036:8036"
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ner_db
+      DB_USER: postgres
+      DB_PASSWORD: ${TL_DB_PASSWORD}
+      TI_DATA_DIR: /app/ti_data
+    volumes:
+      - ./api:/app/api                 # 后端代码(含 api/.env,随目录挂载)
+      - ./web/dist:/app/web/dist       # 前端产物
+      - ./models:/app/models           # NER/ATT&CK 模型(约 18G)
+      - ./ti_data:/app/ti_data         # TI 会话种子/留证(持久化登录态)
+      - ./docs:/app/docs               # 手册文档
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8036/auth/config', timeout=5)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s   # 模型加载耗时较长
+
+volumes:
+  threatlens_pgdata:

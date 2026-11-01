@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 测试 / 结果
+results/
+datasets/
+datasets.zip
+debug_labels.py
+ner_benchmark.py
+*.jsonl
+
+# 前端开发文件
+web/node_modules/
+web/dist/
+
+# 模型文件（通过 -v 挂载，不打入镜像）
+models/
+
+# Git
+.git/
+.gitignore
+
+# 文档
+README.md
+README_WEB.md
+
+# IDE
+.vscode/
+.idea/
+
+# 日志
+*.log
+logs/

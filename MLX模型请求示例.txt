@@ -1,0 +1,55 @@
+  (base) wangy@bogon ~ % curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "mlx-community/Qwen3.6-35B-A3B-8bit",
+    "messages": [
+      {"role": "user", "content": "用10字左右夸一下MacBook的M系列芯片"}
+    ],
+    "temperature": 0.7,
+    "stream": true,
+    "chat_template_kwargs": {"enable_thinking": false}
+  }'
+: keepalive 1/1
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "M"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u7cfb\u5217"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\uff1a"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u5feb"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u3001"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u9759"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u3001"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u5f3a"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u3001"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u4e45"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": null, "delta": {"role": "assistant", "content": "\u3002"}}]}
+
+data: {"id": "chatcmpl-576399a2-5dae-4862-8b24-29f5f51de00d", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion.chunk", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439920, "choices": [{"index": 0, "finish_reason": "stop", "delta": {"role": "assistant"}}]}
+
+data: [DONE]
+
+
+
+
+
+(base) wangy@bogon ~ % 
+(base) wangy@bogon ~ % curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "mlx-community/Qwen3.6-35B-A3B-8bit",
+    "messages": [
+      {"role": "user", "content": "用10字左右夸一下MacBook的M系列芯片"}
+    ],
+    "temperature": 0.7,
+    "chat_template_kwargs": {"enable_thinking": false}
+  }'
+{"id": "chatcmpl-eb19720f-7215-4786-965b-e021abc43bb1", "system_fingerprint": "0.31.3-0.31.2-macOS-26.5-arm64-arm-64bit-applegpu_g17s", "object": "chat.completion", "model": "mlx-community/Qwen3.6-35B-A3B-8bit", "created": 1780439956, "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "M\u7cfb\u5217\uff1a\u5feb\u3001\u9759\u3001\u5f3a\u3001\u4e45\u3002"}}], "usage": {"prompt_tokens": 25, "completion_tokens": 12, "total_tokens": 37, "prompt_tokens_details": {"cached_tokens": 24}}}%                                                                                                                                                                                                            (base) wangy@bogon ~ % 

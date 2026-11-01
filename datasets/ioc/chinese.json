@@ -1,0 +1,343 @@
+{
+  "name": "中文NER测试集",
+  "description": "包含账号口令、人员信息（姓名、邮箱、单位、职务、电话、通信账号）、设备、组织机构、IP、MAC地址、域名、缩略语等实体类型",
+  "labels": ["人物", "邮箱", "单位", "职务", "电话", "通信账号", "设备", "组织机构", "IP地址", "MAC地址", "域名", "缩略语", "口令", "地点"],
+  "label_mapping": {
+    "人物": "PERSON",
+    "邮箱": "EMAIL",
+    "单位": "ORG",
+    "职务": "TITLE",
+    "电话": "PHONE",
+    "通信账号": "ACCOUNT",
+    "设备": "DEVICE",
+    "组织机构": "ORG",
+    "IP地址": "IP",
+    "MAC地址": "MAC",
+    "域名": "DOMAIN",
+    "缩略语": "ABBR",
+    "口令": "PASSWORD",
+    "地点": "LOCATION"
+  },
+  "samples": [
+    {
+      "text": "管理员张伟使用账号admin登录了192.168.1.100的交换机，默认口令为admin123。",
+      "entities": [
+        ["张伟", "PERSON", 3, 5],
+        ["admin", "ACCOUNT", 7, 12],
+        ["192.168.1.100", "IP", 15, 28],
+        ["交换机", "DEVICE", 29, 32],
+        ["admin123", "PASSWORD", 38, 46]
+      ]
+    },
+    {
+      "text": "蓝盾信息技术中心主任李明（邮箱：liming@landun.com，电话：13800138000）负责管理内网域名oa.landun.local。",
+      "entities": [
+        ["蓝盾信息技术中心", "ORG", 0, 8],
+        ["主任", "TITLE", 8, 10],
+        ["李明", "PERSON", 10, 12],
+        ["liming@landun.com", "EMAIL", 16, 33],
+        ["13800138000", "PHONE", 37, 48],
+        ["oa.landun.local", "DOMAIN", 57, 72]
+      ]
+    },
+    {
+      "text": "天枢网络安全研究院（TSRC）发布通告，发现MAC地址为AA:BB:CC:DD:EE:FF的设备存在异常流量。",
+      "entities": [
+        ["天枢网络安全研究院", "ORG", 0, 9],
+        ["TSRC", "ABBR", 10, 14],
+        ["AA:BB:CC:DD:EE:FF", "MAC", 24, 41]
+      ]
+    },
+    {
+      "text": "运维工程师王芳通过SSH连接到服务器10.0.0.50，该服务器的域名为mail.yunhe.cn，部署了OA系统。",
+      "entities": [
+        ["运维工程师", "TITLE", 0, 5],
+        ["王芳", "PERSON", 5, 7],
+        ["SSH", "ABBR", 9, 12],
+        ["10.0.0.50", "IP", 16, 25],
+        ["mail.yunhe.cn", "DOMAIN", 33, 46],
+        ["OA", "ABBR", 51, 53]
+      ]
+    },
+    {
+      "text": "星河数据科学实验室的陈博士（微信号：chen_sec_2024）报告了一起针对DNS服务器的攻击事件。",
+      "entities": [
+        ["星河数据科学实验室", "ORG", 0, 9],
+        ["陈博士", "PERSON", 10, 13],
+        ["chen_sec_2024", "ACCOUNT", 18, 31],
+        ["DNS", "ABBR", 38, 41]
+      ]
+    },
+    {
+      "text": "安全审计发现用户zhangsan使用弱口令password@2024登录了防火墙172.16.0.1，该设备MAC为00:1A:2B:3C:4D:5E。",
+      "entities": [
+        ["zhangsan", "ACCOUNT", 6, 14],
+        ["password@2024", "PASSWORD", 18, 31],
+        ["防火墙", "DEVICE", 34, 37],
+        ["172.16.0.1", "IP", 37, 47],
+        ["00:1A:2B:3C:4D:5E", "MAC", 54, 71]
+      ]
+    },
+    {
+      "text": "云盾安全保障中心（云安中心）通报，攻击者利用VPN漏洞入侵了位于北京的核心路由器。",
+      "entities": [
+        ["云盾安全保障中心", "ORG", 0, 8],
+        ["云安中心", "ABBR", 9, 13],
+        ["VPN", "ABBR", 18, 21],
+        ["北京", "LOCATION", 27, 29],
+        ["路由器", "DEVICE", 32, 35]
+      ]
+    },
+    {
+      "text": "技术总监赵刚（工号：A10086，邮箱：zhaogang@yunhe.org.cn，QQ：88776655）负责IDC机房的华为交换机集群管理。",
+      "entities": [
+        ["技术总监", "TITLE", 0, 4],
+        ["赵刚", "PERSON", 4, 6],
+        ["A10086", "ACCOUNT", 11, 17],
+        ["zhaogang@yunhe.org.cn", "EMAIL", 21, 42],
+        ["88776655", "ACCOUNT", 46, 54],
+        ["IDC", "ABBR", 57, 60],
+        ["华为交换机", "DEVICE", 64, 69]
+      ]
+    },
+    {
+      "text": "瑞安科技集团网络部副经理刘洋（手机：15912345678）发现10.10.20.30的堡垒机被暴力破解，口令为Test!@#456。",
+      "entities": [
+        ["瑞安科技集团", "ORG", 0, 6],
+        ["网络部副经理", "TITLE", 6, 12],
+        ["刘洋", "PERSON", 12, 14],
+        ["15912345678", "PHONE", 18, 29],
+        ["10.10.20.30", "IP", 32, 43],
+        ["堡垒机", "DEVICE", 44, 47],
+        ["Test!@#456", "PASSWORD", 55, 65]
+      ]
+    },
+    {
+      "text": "鼎新软件研发中心高级工程师孙丽（钉钉号：sunli_dev）在深圳机房部署了NAS存储设备。",
+      "entities": [
+        ["鼎新软件研发中心", "ORG", 0, 8],
+        ["高级工程师", "TITLE", 8, 13],
+        ["孙丽", "PERSON", 13, 15],
+        ["sunli_dev", "ACCOUNT", 20, 29],
+        ["深圳", "LOCATION", 31, 33],
+        ["NAS", "ABBR", 38, 41]
+      ]
+    },
+    {
+      "text": "明远通信有限公司安全员周磊检测到MAC地址11:22:33:44:55:66的无线AP向域名api.mingyuan.net发送异常请求。",
+      "entities": [
+        ["明远通信有限公司", "ORG", 0, 8],
+        ["安全员", "TITLE", 8, 11],
+        ["周磊", "PERSON", 11, 13],
+        ["11:22:33:44:55:66", "MAC", 19, 36],
+        ["无线AP", "DEVICE", 37, 41],
+        ["api.mingyuan.net", "DOMAIN", 44, 60]
+      ]
+    },
+    {
+      "text": "华创数据中心运营总监吴强（邮箱：wuqiang@huachuang.com，电话：021-55667788）管理着上海园区的全部服务器。",
+      "entities": [
+        ["华创数据中心", "ORG", 0, 6],
+        ["运营总监", "TITLE", 6, 10],
+        ["吴强", "PERSON", 10, 12],
+        ["wuqiang@huachuang.com", "EMAIL", 16, 37],
+        ["021-55667788", "PHONE", 41, 53],
+        ["上海", "LOCATION", 57, 59]
+      ]
+    },
+    {
+      "text": "安全扫描显示192.168.50.200上的IIS服务存在弱口令admin/Admin@888，需立即整改。",
+      "entities": [
+        ["192.168.50.200", "IP", 4, 18],
+        ["IIS", "ABBR", 20, 23],
+        ["Admin@888", "PASSWORD", 31, 40]
+      ]
+    },
+    {
+      "text": "紫光云计算研究所（ZGCC）的首席架构师郑涛在广州部署了SDN控制器，管理域名为sdn.ziguang.local。",
+      "entities": [
+        ["紫光云计算研究所", "ORG", 0, 8],
+        ["ZGCC", "ABBR", 9, 13],
+        ["首席架构师", "TITLE", 15, 20],
+        ["郑涛", "PERSON", 20, 22],
+        ["广州", "LOCATION", 23, 25],
+        ["SDN", "ABBR", 28, 31],
+        ["sdn.ziguang.local", "DOMAIN", 39, 57]
+      ]
+    },
+    {
+      "text": "银河信息安全公司渗透测试员何欣使用Nmap扫描了目标网段10.20.0.0/24，发现多台打印机暴露在外网。",
+      "entities": [
+        ["银河信息安全公司", "ORG", 0, 8],
+        ["渗透测试员", "TITLE", 8, 13],
+        ["何欣", "PERSON", 13, 15],
+        ["Nmap", "ABBR", 17, 21],
+        ["10.20.0.0/24", "IP", 26, 38],
+        ["打印机", "DEVICE", 43, 46]
+      ]
+    },
+    {
+      "text": "长风网络科技有限公司项目经理马超（飞书号：machao_cf）负责维护ERP系统，服务器IP为172.31.1.10。",
+      "entities": [
+        ["长风网络科技有限公司", "ORG", 0, 10],
+        ["项目经理", "TITLE", 10, 14],
+        ["马超", "PERSON", 14, 16],
+        ["machao_cf", "ACCOUNT", 21, 30],
+        ["ERP", "ABBR", 35, 38],
+        ["172.31.1.10", "IP", 46, 57]
+      ]
+    },
+    {
+      "text": "审计日志记录用户root以口令Changeme!登录了位于成都的核心交换机192.168.100.1，MAC为DE:AD:BE:EF:00:01。",
+      "entities": [
+        ["root", "ACCOUNT", 6, 10],
+        ["Changeme!", "PASSWORD", 13, 22],
+        ["成都", "LOCATION", 26, 28],
+        ["交换机", "DEVICE", 31, 34],
+        ["192.168.100.1", "IP", 34, 47],
+        ["DE:AD:BE:EF:00:01", "MAC", 52, 69]
+      ]
+    },
+    {
+      "text": "九州云安全实验室安全研究员林小雨（邮箱：linxy@jiuzhou-sec.cn）发现了一个影响HTTPS协议的零日漏洞。",
+      "entities": [
+        ["九州云安全实验室", "ORG", 0, 8],
+        ["安全研究员", "TITLE", 8, 13],
+        ["林小雨", "PERSON", 13, 16],
+        ["linxy@jiuzhou-sec.cn", "EMAIL", 20, 40],
+        ["HTTPS", "ABBR", 47, 52]
+      ]
+    },
+    {
+      "text": "天工智能系统公司CTO黄海（手机：18600001111，微信：huanghai_tg）在杭州机房上线了GPU服务器集群。",
+      "entities": [
+        ["天工智能系统公司", "ORG", 0, 8],
+        ["CTO", "TITLE", 8, 11],
+        ["黄海", "PERSON", 11, 13],
+        ["18600001111", "PHONE", 17, 28],
+        ["huanghai_tg", "ACCOUNT", 32, 43],
+        ["杭州", "LOCATION", 45, 47],
+        ["GPU服务器", "DEVICE", 52, 57]
+      ]
+    },
+    {
+      "text": "盘古数据治理平台管理员许文强将FTP服务器ftp.pangu.local的默认口令从ftp123修改为Ft9$kL2m!x。",
+      "entities": [
+        ["盘古数据治理平台", "ORG", 0, 8],
+        ["管理员", "TITLE", 8, 11],
+        ["许文强", "PERSON", 11, 14],
+        ["FTP", "ABBR", 15, 18],
+        ["ftp.pangu.local", "DOMAIN", 21, 36],
+        ["ftp123", "PASSWORD", 42, 48],
+        ["Ft9$kL2m!x", "PASSWORD", 52, 62]
+      ]
+    },
+    {
+      "text": "朝阳数字科技集团网络安全部部长钱进（QQ：12345678）监控到来自外部IP 203.0.113.55的SQL注入攻击。",
+      "entities": [
+        ["朝阳数字科技集团", "ORG", 0, 8],
+        ["网络安全部部长", "TITLE", 8, 15],
+        ["钱进", "PERSON", 15, 17],
+        ["12345678", "ACCOUNT", 21, 29],
+        ["203.0.113.55", "IP", 37, 49],
+        ["SQL", "ABBR", 50, 53]
+      ]
+    },
+    {
+      "text": "远航云服务有限公司在武汉建设了新的数据中心，部署了锐捷路由器和深信服防火墙，统一管理域名为dc.yuanhang.net。",
+      "entities": [
+        ["远航云服务有限公司", "ORG", 0, 9],
+        ["武汉", "LOCATION", 10, 12],
+        ["锐捷路由器", "DEVICE", 21, 26],
+        ["深信服防火墙", "DEVICE", 27, 33],
+        ["dc.yuanhang.net", "DOMAIN", 42, 57]
+      ]
+    },
+    {
+      "text": "安全工程师韩梅梅（邮箱：hanmm@qianfeng.com，手机：13700137000）在排查中发现MAC地址CC:DD:EE:FF:00:11的摄像头存在后门。",
+      "entities": [
+        ["安全工程师", "TITLE", 0, 5],
+        ["韩梅梅", "PERSON", 5, 8],
+        ["hanmm@qianfeng.com", "EMAIL", 12, 30],
+        ["13700137000", "PHONE", 34, 45],
+        ["CC:DD:EE:FF:00:11", "MAC", 54, 71],
+        ["摄像头", "DEVICE", 72, 75]
+      ]
+    },
+    {
+      "text": "启明数据安全中心（QMSC）发布了关于SNMP协议弱口令community的安全通告，涉及全国多个城市的网络设备。",
+      "entities": [
+        ["启明数据安全中心", "ORG", 0, 8],
+        ["QMSC", "ABBR", 9, 13],
+        ["SNMP", "ABBR", 18, 22],
+        ["community", "PASSWORD", 26, 35]
+      ]
+    },
+    {
+      "text": "凌云科技有限公司系统管理员杨帆通过RDP远程登录了Windows服务器192.168.200.10，域名为erp.lingyun.local。",
+      "entities": [
+        ["凌云科技有限公司", "ORG", 0, 8],
+        ["系统管理员", "TITLE", 8, 13],
+        ["杨帆", "PERSON", 13, 15],
+        ["RDP", "ABBR", 17, 20],
+        ["192.168.200.10", "IP", 30, 44],
+        ["erp.lingyun.local", "DOMAIN", 49, 67]
+      ]
+    },
+    {
+      "text": "博远信息工程研究所副所长陆涛（钉钉：lutao_boyuan，电话：010-88889999）主持了新一代IDS系统的验收工作。",
+      "entities": [
+        ["博远信息工程研究所", "ORG", 0, 9],
+        ["副所长", "TITLE", 9, 12],
+        ["陆涛", "PERSON", 12, 14],
+        ["lutao_boyuan", "ACCOUNT", 18, 30],
+        ["010-88889999", "PHONE", 34, 46],
+        ["IDS", "ABBR", 53, 56]
+      ]
+    },
+    {
+      "text": "威远网络安全公司实习生小张误将测试口令Test1234写入了生产环境的Nginx配置文件，域名为web.weiyuan.cn。",
+      "entities": [
+        ["威远网络安全公司", "ORG", 0, 8],
+        ["实习生", "TITLE", 8, 11],
+        ["小张", "PERSON", 11, 13],
+        ["Test1234", "PASSWORD", 18, 26],
+        ["Nginx", "DEVICE", 35, 40],
+        ["web.weiyuan.cn", "DOMAIN", 47, 61]
+      ]
+    },
+    {
+      "text": "鸿蒙数据科技集团CSO白洁（邮箱：baijie@hongmeng-data.com）在重庆总部召开了关于WAF部署的专题会议。",
+      "entities": [
+        ["鸿蒙数据科技集团", "ORG", 0, 8],
+        ["CSO", "TITLE", 8, 11],
+        ["白洁", "PERSON", 11, 13],
+        ["baijie@hongmeng-data.com", "EMAIL", 17, 41],
+        ["重庆", "LOCATION", 43, 45],
+        ["WAF", "ABBR", 52, 55]
+      ]
+    },
+    {
+      "text": "天盾云防护平台检测到IP地址198.51.100.23对域名portal.tiandun.net发起了DDoS攻击，目标设备为负载均衡器。",
+      "entities": [
+        ["天盾云防护平台", "ORG", 0, 7],
+        ["198.51.100.23", "IP", 12, 25],
+        ["portal.tiandun.net", "DOMAIN", 28, 46],
+        ["DDoS", "ABBR", 49, 53],
+        ["负载均衡器", "DEVICE", 60, 65]
+      ]
+    },
+    {
+      "text": "龙腾信息安全服务公司高级顾问冯雪（微信：fengxue_lt，QQ：55443322）协助客户修复了LDAP服务器10.100.1.5的配置漏洞。",
+      "entities": [
+        ["龙腾信息安全服务公司", "ORG", 0, 10],
+        ["高级顾问", "TITLE", 10, 14],
+        ["冯雪", "PERSON", 14, 16],
+        ["fengxue_lt", "ACCOUNT", 20, 30],
+        ["55443322", "ACCOUNT", 34, 42],
+        ["LDAP", "ABBR", 50, 54],
+        ["10.100.1.5", "IP", 57, 67]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,608 @@
+# 奇安信（ti.qianxin.com）采集 selector 配置
+# 版本规则：每次修改更新 version，任务诊断信息会记录采集所用版本
+# P0 预研产物见 ti_data/recon/qianxin/（截图、XHR 清单、DOM 片段、findings.json）
+# r4 结构化改造（2026-07-25）：按 display-spec.md + 登录态 DOM 转储逐模块校准——
+#   ip/domain/file 三类：确定性标签 chip 行(blocks)/威胁概览(blocks+strip)/
+#   关联计数(blocks)/情报研判·参考标签(原生 tr 表)/相关安全报告(security-report-item 行)/
+#   IOC详情(tr.ivu-table-row 锁定数据行，避开 ivu-table-tip 空态噪音)/
+#   样本页四 tab 细分（检测概览/引擎明细/文件信息/Exiftool/行为/DNS/下载链接）。
+#   全部 selector 经转储 HTML file:// 重放引擎 _extract_sections 验证。
+#   ⚠ ivu 表格须知：隐藏空态行 innerText 会退化为 textContent 返回文本，
+#   必须用 tr.ivu-table-row 限定数据行；chip 列表必须加 :visible 排除 +N 浮层重复。
+#   主机行为含多张结论明细表（5列API表/6列资源表），按表头文字锁定各自 wrapper。
+# r6 补齐侧导航 tab（2026-07-25）：按 ti_data/recon/qianxin/tabs/{ip,domain,file}/
+#   逐 tab 点击后 DOM 转储校准，新增区块——
+#   ip：QAX情报(text)/域名反查(table 6列)/C段情报(table 10列)/WHOIS(kv)/
+#       主机信息(table 6列,ivu)/数字证书(table 证书卡片行)/近期活动(table 7列)/网页结果(table 3列)
+#   domain：QAX情报(text)/域名解析(table 4列,仅当前解析默认A表)/注册信息(kv)/
+#       历史注册信息(table 5列)/关联域名(table 7列)/数字证书(table 证书卡片行)/
+#       近期活动(table 6列,域名近期解析记录)/网页结果(table 2列)
+#   file：QAX情报(text)/网页结果(table 2列,本例空态自动降级 text)
+#   tab↔任务对应（DOM 容器 id/class ↔ 轮询任务名，xhr_bodies 确认）：
+#     域名反查=ip_passive_dns(+ip_passive_dns_v2) C段情报=ip_c_intelligence
+#     主机信息=ip_try_connect 数字证书=ip_cert_v2/domain_cert_list_v2
+#     近期活动=ip_active/domain_active 域名解析(当前)=dns 注册信息=whois_abstract(+whois_v2/whois)
+#     关联域名=subdomain 网页结果=google_search(三类通用)
+#     QAX情报=community 微应用 API（community/v2/vote、comment-list），非 ti/task 任务框架
+#   key_tasks 已按上表扩充；任务名不在当次 task_map 时自动跳过，超时仅告警继续（不失败）。
+#   已知取舍：① 社区 tab 为跨域 iframe（community.ti.qianxin.com 微应用），不抓；
+#   ② 主机信息右侧行级详情面板（端口响应/网站正文/证书信息/TLS-JRAM）不抓；
+#   ③ 域名解析 A/AAAA/CNAME 子 tab 只抓默认渲染的 A 表，不逐一点击；
+#   ④ 页面列表只渲染首页（分页/查看更多），全量在 raw 任务 JSON；
+#   ⑤ 各表格模块的概述行（“反查出 100 个域名”“256 个IP…”等计数）未入 sections，
+#      计数见 raw 任务 JSON（与既有区块一致）；
+#   ⑥ QAX情报/访问列表等面板懒渲染且本例多为空态，text/降级即空态信号；
+#   ⑦ domain 近期活动抓同 tab 的「域名近期解析记录」表（#domain_active）——
+#      客户端近期访问记录为纯图表 canvas、访问列表本例“无匹配数据”，无文本可抓。
+# r7（2026-07-25）：点击类表格区块配 wait_for 等懒加载数据行（引擎新增
+#   sections[].wait_for 支持，见 web.py）——实测 C段情报等 tab 点击后「查询中」，
+#   固定 sleep 3000 不够；wait_ms 改为 wait_for 超时上限（6000），超时按当前状态取数。
+#   ⚠ 含 chip 列（ioc-tags）的表必须等 chip 选择器——chip 渲染晚于数据行，
+#   等 tbody tr 会抽到空 chip 列（C段情报/域名解析/关联域名 已按此校准）。
+version: "2026-08-12-r8"
+
+# ─── 登录流程 ────────────────────────────────────────────────────────────
+# 入口：https://ti.qianxin.com/portal 右上角「登录」→ 跳转统一认证页
+# user.ti.qianxin.com/login?next=<回跳地址>，成功后跳回 next。
+# ⚠ r8（2026-08-12）：平台改版，未登录访问 portal 不再 302 弹回 SSO，
+#   而是 200 直出游客首页（右上角「登录/注册」链接，a[href*=user.ti.qianxin.com/login]）。
+#   因此新增 entry_button：自动登录须先点击该链接进入 SSO 页再填表单
+#   （此前依赖「游客必被弹回 SSO」，已在失败留证 qianxin-1786459088 复现确认）。
+#   SSO 登录页表单 selector 实测仍匹配（2026-08-12 探针验证）。
+# 预研结论：无图形验证码/滑块（2 次登录尝试均未出现）；必须先勾选协议
+# 复选框，否则前端拦截提交（红色提示“请勾选我已阅读并同意…”）。
+# 页面另有「短信验证码登录」标签、微信扫码（其它方式）、「内部员工登录」标签。
+login:
+  url: "https://user.ti.qianxin.com/login?next=https%3A%2F%2Fti.qianxin.com%2Fportal"
+  probe_url: "https://ti.qianxin.com/portal"   # 登录态探测页（勿用 SSO URL 探测）
+  sso_url_pattern: "https://user.ti.qianxin.com/login**"  # 命中即未登录/会话失效
+  entry_button: '.toobal-login a[href*="user.ti.qianxin.com/login"]'  # r8：portal 游客页右上角「登录」链接
+  username_input: 'input[placeholder*="手机号或邮箱"]'
+  password_input: 'input[placeholder*="密码"]'          # type=password
+  agreement_checkbox: "label.q-checkbox"               # 提交前必须点击勾选
+  submit_button: "div.btn-area > button.q-button.btn-width"  # 按钮文案「登 录」
+  # 成功标志（满足其一）：跳回 ti.qianxin.com 且出现用户菜单；
+  # 或 GET /alpha-api/v2/user/info-detail 返回 {"status":200}（未登录为 10102 non-login）
+  success_marker: "[class*=user-info]"
+  success_url_pattern: "^https://ti\\.qianxin\\.com/"
+  captcha_marker: ""   # 未观察到验证码；若后续出现滑块/图形码，转人工（need_manual）
+  auth_fail_marker: ".q-form-item__error, .q-form-item__error-message"  # 表单错误提示（未实测，遇到再校准）
+  # 会话复用：storage_state（cookies）新 context 直接免登（已验证，
+  # 见 ti_data/recon/qianxin/findings.json → session_reuse）
+
+# ─── 查询规则 ────────────────────────────────────────────────────────────
+# 取数优先级：intercepts（响应拦截 JSON）> sections（DOM innerText）
+#
+# 详情页为 Vue SPA「威胁研判分析」，直接导航 url_tpl 即自动触发研判，
+# 无需操作搜索框（搜索框提交会 window.open 新开 Tab，P2 应避免）。
+# JSON API 统一包裹 {"status","message","data"}：
+#   1) GET /alpha-api/v2/ti/query?type={ip|domain}&value={seed}&execute=1
+#      → data 为 {任务名: 任务ID} 映射（任务ID带哈希后缀，每次查询生成）
+#   2) 前端轮询 GET /alpha-api/v2/ti/task/{id1,id2,...}
+#      → data.{任务ID}.status：10000=完成（结果在 table/priv_msg），10303=进行中
+#   已观察任务名：
+#     ip     — ip_active / ip_passive_dns / ip_passive_dns_v2 / ip_c_intelligence /
+#              ip_cert_v2 / ip_try_connect / ioc_detect / deterministic_tag /
+#              referential_tag / reports_v2 / graph_analysis / google_search /
+#              whois / whois_v2（WHOIS tab，归属以当次 task_map 为准）
+#     domain — domain_active / domain_attribute / domain_passive_dns_a /
+#              domain_passive_dns_other / subdomain / whois / whois_v2 / whois_abstract /
+#              icp_attribute_his / domain_cert_list_v2 / domain_try_connect / ioc_detect /
+#              deterministic_tag / referential_tag / reports_v2 / graph_analysis / dns / access
+# 建议：响应拦截为主（轮询至关键任务完成或超时），sections 作兜底。
+# 注意：页面列表自身分页（标签 5/15、报告 5/97 只渲染首页，“查看更多”按需加载），
+#   全量数据在 raw 的任务 JSON（deterministic_tag/referential_tag/reports_v2）里。
+query:
+  ip:
+    url_tpl: "https://ti.qianxin.com/v2/search?type=ip&value={value}"
+    page_ready: "div#ti-ip"
+    poll:                       # 数据就绪等待：任务映射 + 轮询关键任务（见文件头注释）
+      map_pattern: "**/alpha-api/v2/ti/query?*"
+      result_pattern: "**/alpha-api/v2/ti/task/*"
+      key_tasks: [deterministic_tag, referential_tag, ioc_detect, ip_active,
+                  ip_passive_dns, ip_passive_dns_v2, ip_c_intelligence, ip_cert_v2,
+                  ip_try_connect, google_search, whois, whois_v2]   # r6: 补齐新 tab 依赖任务
+      timeout_s: 25
+    intercepts:
+      - pattern: "**/alpha-api/v2/ti/query?*type=ip*"
+        usage: "触发研判，返回任务ID映射（必需）"
+      - pattern: "**/alpha-api/v2/ti/task/*"
+        usage: "轮询任务结果，status 10000=完成 / 10303=进行中"
+      - pattern: "**/alpha-api/v2/user/ioc-status*"
+        usage: "IOC 关注/判定状态"
+      - pattern: "**/alpha-api/v2/case/clues*value=*"
+        usage: "相关线索/事件"
+      - pattern: "**/alpha-api/v2/ti-gpt/chat-ioc*"
+        usage: "AI 研判摘要（流式）"
+    sections:
+      - name: 威胁研判确定性情报标签   # 深色研判区 chip 行：分类名 → chip 数组
+        selector: "div#ti-ip section.tag-classify-container"
+        format: blocks
+        blocks:
+          - {key: 杀伤链,   selector: ".tag-classify-item.kill-chain-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意类型, selector: ".tag-classify-item.threat-type-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意家族, selector: ".tag-classify-item.malicious-family-color .ivu-tag-text:visible", multiple: true}
+          - {key: 画像信息, selector: ".tag-classify-item.profiling-color .ivu-tag-text:visible", multiple: true}
+      - name: 威胁概览          # kv 信息卡片 3 列（ASN/网络场景/IP用途/用户类型/归属组织/目标行业）
+        selector: "div#ti-ip div.ti-left-information"
+        format: blocks
+        blocks:
+          - {key: 情报更新时间, selector: ".update_time_container span.time"}
+          - {key: ASN,     selector: '.ip-info-item:has-text("ASN:")',   strip: "ASN:"}
+          - {key: 网络场景, selector: '.ip-info-item:has-text("网络场景:")', strip: "网络场景:"}
+          - {key: IP用途,  selector: '.ip-info-item:has-text("IP 用途:")', strip: "IP 用途:"}
+          - {key: 用户类型, selector: '.ip-info-item:has-text("用户类型:")', strip: "用户类型:"}
+          - {key: 归属组织, selector: '.ip-info-item:has-text("归属组织:")', strip: "归属组织:"}
+          - {key: 目标行业, selector: '.ip-info-item:has-text("目标行业:")', strip: "目标行业:"}
+      - name: 关联计数          # 计数条（报告/样本/URL/攻击记录/端口/漏洞；disabled 项无 .tab-num 自动缺席）
+        selector: "div#ti-ip div.base-tabs"
+        format: blocks
+        blocks:
+          - {key: 相关安全报告, selector: '.base-tabs__item:has-text("相关安全报告") .tab-num'}
+          - {key: 相关样本,     selector: '.base-tabs__item:has-text("相关样本") .tab-num'}
+          - {key: 相关URL,      selector: '.base-tabs__item:has-text("相关URL") .tab-num'}
+          - {key: 攻击记录,     selector: '.base-tabs__item:has-text("攻击记录") .tab-num'}
+          - {key: 开放端口,     selector: '.base-tabs__item:has-text("开放端口") .tab-num'}
+          - {key: 相关漏洞,     selector: '.base-tabs__item:has-text("相关漏洞") .tab-num'}
+      - name: AI研判摘要         # 长文（小节+列表），保持原文
+        selector: "div#ti-ip div.collapse-card.ti-gpt-content"
+        format: text
+      - name: 情报研判标签       # 3 列：情报标签|首次标记时间|标签更新时间（原生 tr）
+        selector: 'div#ti-ip div.collapse-card:has(.collapse-card__title-text:text-is("情报研判标签"))'
+        format: table
+      - name: 情报参考标签       # 5 列：情报标签|情报源|首次标记时间|标签更新时间|参考价值
+        selector: 'div#ti-ip div.collapse-card:has(.collapse-card__title-text:text-is("情报参考标签"))'
+        format: table
+      - name: 相关安全报告       # 报告列表项（div 结构非 tr；报告信息为多行 kv 单元格）
+        selector: "div#ti-ip div#security-report"
+        format: table
+        row_selector: "div.security-report-item"
+        column_map:
+          报告链接: ".report-collapse__header--title"
+          运营标记: ".manual-tag .ivu-tag-text"
+          报告信息: ".report-collapse__tags"
+      - name: 攻击者画像         # 人工运营画像（空态“没有数据”为正常信号）
+        selector: 'div#ti-ip div.collapse-card:has(.collapse-card__title-text:text-is("攻击者画像"))'
+        format: text
+      - name: IOC详情           # 5 列：IOC对象|IOC类型|最早发布时间|端口号|URI
+        selector: "div#ti-ip div.result-sub-section.ioc_detect"
+        format: table
+        row_selector: "tr.ivu-table-row"   # 锁定数据行：默认 tr 会混入 ivu-table-tip「暂无筛选结果」
+        column_map:
+          IOC对象: "td:nth-of-type(1)"
+          IOC类型: "td:nth-of-type(2)"
+          最早发布时间: "td:nth-of-type(3)"
+          端口号: "td:nth-of-type(4)"
+          URI: "td:nth-of-type(5)"
+      - name: 相关样本          # 7 列原生 tr：样本MD5|活动时间|活动类型|活动|恶意类型|家族信息|操作
+        selector: "div#ti-ip div#ip_try div.related-samples"
+        format: table
+      # ───── r6：侧导航 tab（点击切换面板，转储逐 tab 校准；均排在默认 tab 之后）─────
+      - name: QAX情报           # 社区情报（用户共享情报）；数据走 community 微应用 API，非任务框架
+        click: 'a.result-nav-name:has-text("QAX情报")'
+        selector: "div#ti-ip .inner-intelligence-wrapper"
+        format: text            # 面板懒渲染；本例空态“没有数据”，保持原文即空态信号
+      - name: 域名反查          # 6 列：域名|最早看到|最近看到|研判意见|7天解析量|标签（“更多”操作列不抓）
+        click: 'a.result-nav-name:has-text("域名反查")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .passive-back__content tbody tr"   # 点击后「查询中」懒加载，等数据行
+        selector: "div#ti-ip .passive-back__content"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          域名: "td:nth-of-type(1)"
+          最早看到: "td:nth-of-type(2)"
+          最近看到: "td:nth-of-type(3)"
+          研判意见: "td:nth-of-type(4)"
+          7天解析量: "td:nth-of-type(5)"
+          标签: "td:nth-of-type(6)"
+      - name: C段情报           # 10 列 pure-table；概述“256 个IP，包含 N 个恶意”计数见 raw（ip_c_intelligence）
+        click: 'a.result-nav-name:has-text("C段情报")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip section.result-section.c-intelligence .ioc-tags-list .ivu-tag-text"   # chip 渲染晚于数据行，等 chip 才算就绪
+        selector: "div#ti-ip section.result-section.c-intelligence"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          IP地址: "td:nth-of-type(1)"
+          IP研判结果: "td:nth-of-type(2)"
+          用户类型: "td:nth-of-type(3)"
+          IP研判标签: "td:nth-of-type(4)"
+          攻击类型: "td:nth-of-type(5)"
+          失陷恶意类型: "td:nth-of-type(6)"
+          最近解析的域名: "td:nth-of-type(7)"
+          最近看到时间: "td:nth-of-type(8)"
+          网络场景: "td:nth-of-type(9)"
+          IP用途: "td:nth-of-type(10)"   # 表头原文为“IP 用途”（带空格）
+      - name: WHOIS             # 双列 kv：IP WHOIS服务器/注册机构/网段/无类别域间路由/网络名称/…
+        click: 'a.result-nav-name:has-text("WHOIS")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .whois-container .whois-item"
+        selector: "div#ti-ip .whois-container"
+        format: kv
+        item_selector: ".whois-item"   # item 模式：label/value 分div，避开链接值冒号干扰
+      - name: 主机信息          # 6 列：端口/协议|域名|应用/组件|站点标题|状态码|最近发现时间（ivu 表）
+        click: 'a.result-nav-name:has-text("主机信息")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .host-info__content .host-table tr.ivu-table-row"
+        selector: "div#ti-ip .host-info__content .host-table"   # 右侧行级详情面板 #full-main 不抓
+        format: table
+        row_selector: "tr.ivu-table-row"   # 剔除 ivu-table-tip 隐藏空态行
+        column_map:
+          端口/协议: "td:nth-of-type(1)"
+          域名: "td:nth-of-type(2)"
+          应用/组件: "td:nth-of-type(3)"
+          站点标题: "td:nth-of-type(4)"
+          状态码: "td:nth-of-type(5)"
+          最近发现时间: "td:nth-of-type(6)"
+      - name: 数字证书          # 证书卡片行：状态 chips + kv 网格（row_selector=卡片，col--label 锁定字段）
+        click: 'a.result-nav-name:has-text("数字证书")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .digital-certificate__content .cert-card"
+        selector: "div#ti-ip .digital-certificate__content"
+        format: table
+        row_selector: ".cert-card"
+        column_map:
+          状态: ".cert-card__header .tags"
+          证书指纹: '.row:has(.col--label:text-is("证书指纹：")) .col--value'
+          颁发时间: '.row:has(.col--label:text-is("颁发时间：")) .col--value'
+          失效时间: '.row:has(.col--label:text-is("失效时间：")) .col--value'
+          使用者名称: '.row:has(.col--label:text-is("使用者名称：")) .col--value'
+          颁发者名称: '.row:has(.col--label:text-is("颁发者名称：")) .col--value'
+          序列号: '.row:has(.col--label:text-is("序列号：")) .col--value'
+          相关域名: '.row:has(.col--label:text-is("相关域名：")) .col--value'
+      - name: 近期活动          # 7 列：域名|最早看到|最近看到|类型|解析次数|研判意见|标签（#ip_active）
+        click: 'a.result-nav-name:has-text("近期活动")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .parse-records__content tbody tr"
+        selector: "div#ti-ip .parse-records__content"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          域名: "td:nth-of-type(1)"
+          最早看到: "td:nth-of-type(2)"
+          最近看到: "td:nth-of-type(3)"
+          类型: "td:nth-of-type(4)"
+          解析次数: "td:nth-of-type(5)"
+          研判意见: "td:nth-of-type(6)"
+          标签: "td:nth-of-type(7)"
+      - name: 网页结果          # 搜索结果列表：标题|时间|摘要（链接在 href，innerText 抽不到）
+        click: 'a.result-nav-name:has-text("网页结果")'
+        wait_ms: 6000
+        wait_for: "div#ti-ip .page-result__content ul.google_search_list li"
+        selector: "div#ti-ip .page-result__content"
+        format: table
+        row_selector: "ul.google_search_list li"
+        column_map:
+          标题: "h2"
+          时间: "p span.color_999"
+          摘要: "p"             # 摘要行内首段即日期，与页面一致
+    # 未覆盖：威胁图谱分析（canvas 图谱，无文本）；社区 tab（跨域 iframe，不抓）；
+    # 主机信息右侧行级详情面板（端口响应/网站正文/证书信息/TLS-JRAM）；
+    # 各 tab 概述行计数与分页全量（见 raw 任务 JSON，sections 只抓首页）
+  domain:
+    url_tpl: "https://ti.qianxin.com/v2/search?type=domain&value={value}"
+    page_ready: "div#ti-domain"
+    poll:
+      map_pattern: "**/alpha-api/v2/ti/query?*"
+      result_pattern: "**/alpha-api/v2/ti/task/*"
+      key_tasks: [deterministic_tag, referential_tag, ioc_detect, domain_active,
+                  dns, subdomain, whois_abstract, whois_v2, whois,
+                  domain_cert_list_v2, google_search]   # r6: 补齐新 tab 依赖任务
+      timeout_s: 25
+    intercepts:
+      - pattern: "**/alpha-api/v2/ti/query?*type=domain*"
+        usage: "触发研判，返回任务ID映射（必需）"
+      - pattern: "**/alpha-api/v2/ti/task/*"
+        usage: "轮询任务结果，status 10000=完成 / 10303=进行中"
+      - pattern: "**/alpha-api/v2/user/ioc-status*"
+        usage: "IOC 关注/判定状态"
+      - pattern: "**/alpha-api/v2/case/clues*value=*"
+        usage: "相关线索/事件"
+      - pattern: "**/alpha-api/v2/ti-gpt/chat-ioc*"
+        usage: "AI 研判摘要（流式）"
+    sections:
+      - name: 威胁研判确定性情报标签   # chip 行：杀伤链/恶意类型/恶意家族/画像信息/安全状态
+        selector: "div#ti-domain section.tag-classify-container"
+        format: blocks
+        blocks:
+          - {key: 杀伤链,   selector: ".tag-classify-item.kill-chain-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意类型, selector: ".tag-classify-item.threat-type-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意家族, selector: ".tag-classify-item.malicious-family-color .ivu-tag-text:visible", multiple: true}
+          - {key: 画像信息, selector: ".tag-classify-item.profiling-color .ivu-tag-text:visible", multiple: true}
+          - {key: 安全状态, selector: ".tag-classify-item.security-status-color .ivu-tag-text:visible", multiple: true}
+      - name: 威胁概览          # WHOIS 属性 3 列 + 关联计数（disabled/加载中项自动缺席）
+        selector: "div#ti-domain div.ti-left-information"
+        format: blocks
+        blocks:
+          - {key: 情报更新时间, selector: ".update_time_container span.time"}
+          - {key: 注册人,   selector: '.domian-info-item:has-text("注册人:")',   strip: "注册人:"}
+          - {key: 组织,     selector: '.domian-info-item:has-text("组织:")',     strip: "组织:"}
+          - {key: 备案单位, selector: '.domian-info-item:has-text("备案单位:")', strip: "备案单位:"}
+          - {key: 流行度,   selector: '.domian-info-item:has-text("流行度:")',   strip: "流行度:"}
+          - {key: 动态域名, selector: '.domian-info-item:has-text("动态域名:")', strip: "动态域名:"}
+          - {key: 隐私保护, selector: '.domian-info-item:has-text("隐私保护:")', strip: "隐私保护:"}
+          - {key: 白名单,   selector: '.domian-info-item:has-text("白名单:")',   strip: "白名单:"}
+          - {key: 注册日期, selector: '.domian-info-item:has-text("注册日期:")', strip: "注册日期:"}
+          - {key: 过期日期, selector: '.domian-info-item:has-text("过期日期:")', strip: "过期日期:"}
+          - {key: 更新日期, selector: '.domian-info-item:has-text("更新日期:")', strip: "更新日期:"}
+          - {key: 最近看到, selector: '.domian-info-item:has-text("最近看到:")', strip: "最近看到:"}
+          - {key: 目标行业, selector: '.domian-info-item:has-text("目标行业:")', strip: "目标行业:"}
+          - {key: 相关安全报告, selector: '.base-tabs__item:has-text("相关安全报告") .tab-num'}
+          - {key: 相关样本,     selector: '.base-tabs__item:has-text("相关样本") .tab-num'}
+          - {key: 相关URL,      selector: '.base-tabs__item:has-text("相关URL") .tab-num'}
+          - {key: 解析IP,       selector: '.base-tabs__item:has-text("解析IP") .tab-num'}
+          - {key: 相关域名,     selector: '.base-tabs__item:has-text("相关域名") .tab-num'}
+      - name: AI研判摘要         # 长文，保持原文
+        selector: "div#ti-domain div.collapse-card.ti-gpt-content"
+        format: text
+      - name: 情报研判标签       # 3 列：情报标签|首次标记时间|标签更新时间
+        selector: 'div#ti-domain div.collapse-card:has(.collapse-card__title-text:text-is("情报研判标签"))'
+        format: table
+      - name: 情报参考标签       # 5 列：情报标签|情报源|首次标记时间|标签更新时间|参考价值
+        selector: 'div#ti-domain div.collapse-card:has(.collapse-card__title-text:text-is("情报参考标签"))'
+        format: table
+      - name: 相关安全报告
+        selector: "div#ti-domain div#security-report"
+        format: table
+        row_selector: "div.security-report-item"
+        column_map:
+          报告链接: ".report-collapse__header--title"
+          运营标记: ".manual-tag .ivu-tag-text"
+          报告信息: ".report-collapse__tags"
+      - name: IOC详情           # 5 列：IOC对象|IOC类型|最早发布时间|端口号|URI
+        selector: "div#ti-domain div.result-sub-section.ioc_detect"
+        format: table
+        row_selector: "tr.ivu-table-row"
+        column_map:
+          IOC对象: "td:nth-of-type(1)"
+          IOC类型: "td:nth-of-type(2)"
+          最早发布时间: "td:nth-of-type(3)"
+          端口号: "td:nth-of-type(4)"
+          URI: "td:nth-of-type(5)"
+      # ───── r6：侧导航 tab（点击切换面板，转储逐 tab 校准；均排在默认 tab 之后）─────
+      - name: QAX情报           # 社区情报；数据走 community 微应用 API，非任务框架
+        click: 'a.result-nav-name:has-text("QAX情报")'
+        selector: "div#ti-domain .inner-intelligence-wrapper"
+        format: text            # 面板懒渲染；本例空态“没有数据”，保持原文即空态信号
+      - name: 域名解析          # 当前解析记录（#dns-id）4 列：解析结果|地理位置|ASN|标签；
+        click: 'a.result-nav-name:has-text("域名解析")'   # A/AAAA/CNAME 子 tab 只抓默认 A 表；历史解析记录未抓（见 raw domain_passive_dns_a）
+        wait_ms: 6000
+        wait_for: "div#ti-domain #dns-id .ioc-tags-list .ivu-tag-text"   # chip 渲染晚于数据行
+        selector: "div#ti-domain #dns-id"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          解析结果: "td:nth-of-type(1)"
+          地理位置: "td:nth-of-type(2)"
+          ASN: "td:nth-of-type(3)"
+          标签: "td:nth-of-type(4)"
+      - name: 注册信息          # 当前注册信息 WHOIS kv（创建/过期/更新时间等 11 项）
+        click: 'a.result-nav-name:has-text("注册信息")'
+        wait_ms: 6000
+        wait_for: 'div#ti-domain section.result-section.whois .result-sub-section:has(.result-detail-title:has-text("当前注册信息")) .result-items'
+        selector: 'div#ti-domain section.result-section.whois .result-sub-section:has(.result-detail-title:has-text("当前注册信息"))'
+        format: kv
+        item_selector: ".result-items"   # item 模式：label/content 分div
+      - name: 历史注册信息       # 历史 WHOIS 变更 5 列（本例 5/85 只渲染首页；“详情”操作列不抓）
+        click: 'a.result-nav-name:has-text("注册信息")'
+        wait_ms: 800
+        selector: 'div#ti-domain section.result-section.whois .result-sub-section.shortcut-item'
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          更新时间: "td:nth-of-type(1)"
+          更新类型: "td:nth-of-type(2)"
+          更新内容: "td:nth-of-type(3)"
+          更新前内容: "td:nth-of-type(4)"
+          更新后内容: "td:nth-of-type(5)"
+      - name: 关联域名          # SLD 子域名 7 列（懒加载；空态时自动降级 text）
+        click: 'a.result-nav-name:has-text("关联域名")'
+        wait_ms: 6000
+        wait_for: "div#ti-domain #subdomain-id .ioc-tags-list .ivu-tag-text"   # chip 渲染晚于数据行
+        selector: "div#ti-domain #subdomain-id"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          域名: "td:nth-of-type(1)"
+          IP地址: "td:nth-of-type(2)"
+          IP归属地: "td:nth-of-type(3)"
+          最近出现时间: "td:nth-of-type(4)"
+          最近解析状态: "td:nth-of-type(5)"
+          研判意见: "td:nth-of-type(6)"
+          奇安信标签: "td:nth-of-type(7)"
+      - name: 数字证书          # 相关证书信息：证书卡片行（同 ip 结构）
+        click: 'a.result-nav-name:has-text("数字证书")'
+        wait_ms: 6000
+        wait_for: "div#ti-domain .result-sub-section.domain_cert_list .cert-card"
+        selector: "div#ti-domain .result-sub-section.domain_cert_list"
+        format: table
+        row_selector: ".cert-card"
+        column_map:
+          状态: ".cert-card__header .tags"
+          证书指纹: '.row:has(.col--label:text-is("证书指纹：")) .col--value'
+          颁发时间: '.row:has(.col--label:text-is("颁发时间：")) .col--value'
+          失效时间: '.row:has(.col--label:text-is("失效时间：")) .col--value'
+          使用者名称: '.row:has(.col--label:text-is("使用者名称：")) .col--value'
+          颁发者名称: '.row:has(.col--label:text-is("颁发者名称：")) .col--value'
+          序列号: '.row:has(.col--label:text-is("序列号：")) .col--value'
+          相关域名: '.row:has(.col--label:text-is("相关域名：")) .col--value'
+      - name: 近期活动          # 域名近期解析记录（#domain_active）6 列；
+        click: 'a.result-nav-name:has-text("近期活动")'   # 客户端访问记录为 canvas 图表、访问列表空态，无文本可抓
+        wait_ms: 6000
+        wait_for: "div#ti-domain #domain_active tbody tr"
+        selector: "div#ti-domain #domain_active"
+        format: table
+        row_selector: "tbody tr"
+        column_map:
+          最早看到: "td:nth-of-type(1)"
+          最近看到: "td:nth-of-type(2)"
+          解析结果: "td:nth-of-type(3)"
+          类型: "td:nth-of-type(4)"
+          解析次数: "td:nth-of-type(5)"
+          标签: "td:nth-of-type(6)"
+      - name: 网页结果          # 搜索结果列表：标题|摘要（时间嵌在摘要首段，无独立 span）
+        click: 'a.result-nav-name:has-text("网页结果")'
+        wait_ms: 6000
+        wait_for: "div#ti-domain .page-result__content ul.google_search_list li"
+        selector: "div#ti-domain .page-result__content"
+        format: table
+        row_selector: "ul.google_search_list li"
+        column_map:
+          标题: "h2"
+          摘要: "p"
+    # 未覆盖：社区 tab（跨域 iframe，不抓）；域名解析的历史解析记录与 A/AAAA 等子 tab
+    # （只抓当前解析默认 A 表）；近期活动 tab 的客户端访问记录图表/访问列表（canvas+空态）；
+    # ICP历史信息（本例空态）；流行度星级为纯图形无文本（需要时走 domain_attribute 任务 JSON）；
+    # 各 tab 概述行计数与分页全量（见 raw 任务 JSON，sections 只抓首页）
+  # file（样本哈希）：已验证（2026-07-25，sha256 实测）。路由同 ip/domain：
+  # v2/search?type=file&value={hash} → 主容器 div#ti-md5。tab 为显隐切换
+  # （非锚点）：默认仅「威胁情报」可见，其余 section display:none，须 click
+  # a.result-nav-name 再取数（click 机制默认 wait_ms 3000，同 tab 后续 section 800）。
+  # ⚠ 隐藏 tab 的 innerText 会退化为 textContent（混入浮层文字），click 展开必不可少。
+  file:
+    url_tpl: "https://ti.qianxin.com/v2/search?type=file&value={value}"
+    page_ready: "div#ti-md5"
+    poll:
+      map_pattern: "**/alpha-api/v2/ti/query?*"
+      result_pattern: "**/alpha-api/v2/ti/task/*"
+      key_tasks: [deterministic_tag, referential_tag, google_search]   # 标签任务页面已确认渲染；r6 补 google_search（网页结果 tab）
+      timeout_s: 25
+    intercepts:
+      - pattern: "**/alpha-api/v2/ti/query?*type=file*"
+        usage: "触发研判，返回任务ID映射（必需）"
+      - pattern: "**/alpha-api/v2/ti/task/*"
+        usage: "轮询任务结果，status 10000=完成 / 10303=进行中"
+      - pattern: "**/alpha-api/v2/user/ioc-status*"
+        usage: "IOC 关注/判定状态"
+      - pattern: "**/alpha-api/v2/ti-gpt/chat-ioc*"
+        usage: "AI 研判摘要（流式）"
+    sections:
+      # ───── 默认「威胁情报」tab（无 click，必须排在点击类 section 之前）─────
+      - name: 威胁概览          # 左右双列 kv + 三组彩色 chip（信誉红橙/RAS绿/基因青）
+        selector: "div#ti-md5 .hash-overview-container"
+        format: blocks
+        blocks:
+          - {key: 文件名,   selector: '.result-items:has(.result-items-label:text-is("文件名:")) .result-items-content'}
+          - {key: 文件类型, selector: '.result-items:has(.result-items-label:text-is("文件类型:")) .result-items-content'}
+          - {key: 文件大小, selector: '.result-items:has(.result-items-label:text-is("文件大小:")) .result-items-content'}
+          - {key: MD5,     selector: '.result-items:has(.result-items-label:text-is("MD5:")) .result-items-content'}
+          - {key: SHA1,    selector: '.result-items:has(.result-items-label:text-is("SHA1:")) .result-items-content'}
+          - {key: 分析时间, selector: '.result-items:has(.result-items-label:text-is("分析时间:")) .result-items-content'}
+          - {key: 文件信誉, selector: '.result-items:has(.result-items-label:text-is("文件信誉:")) .reputation-tag', multiple: true}
+          - {key: RAS检测, selector: '.result-items:has(.result-items-label:text-is("RAS检测:")) .ivu-tag.tag-color-0', multiple: true}
+          - {key: 基因特征, selector: '.result-items:has(.result-items-label:text-is("基因特征:")) .ivu-tag.gene-tag', multiple: true}
+      - name: 威胁研判标签       # 确定性标签 chip（⚠ 类名是两个类，非下划线单类）
+        selector: "div#ti-md5 section.result-section-tag.research-tag-voting"
+        format: blocks
+        blocks:
+          - {key: 杀伤链,   selector: ".tag-classify-item.kill-chain-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意类型, selector: ".tag-classify-item.threat-type-color .ivu-tag-text:visible", multiple: true}
+          - {key: 恶意家族, selector: ".tag-classify-item.malicious-family-color .ivu-tag-text:visible", multiple: true}
+          - {key: 画像信息, selector: ".tag-classify-item.profiling-color .ivu-tag-text:visible", multiple: true}
+      - name: AI研判摘要         # 长文，保持原文
+        selector: "div#ti-md5 div.collapse-card.ti-gpt-content"
+        format: text
+      - name: 情报研判标签       # 3 列：情报标签|首次标记时间|标签更新时间
+        selector: 'div#ti-md5 div.collapse-card:has(.collapse-card__title-text:text-is("情报研判标签"))'
+        format: table
+      - name: 情报参考标签       # 5 列；0 条时自动降级 text（标题行，正常空态信号）
+        selector: 'div#ti-md5 div.collapse-card:has(.collapse-card__title-text:text-is("情报参考标签"))'
+        format: table
+      # ───── 检测结果 tab ─────
+      - name: 检测概览          # 检出率 / 检测时间
+        click: 'a.result-nav-name:has-text("检测结果")'
+        selector: "div#ti-md5 section.result-section:has(.engine-items-section)"
+        format: kv
+        item_selector: ".result-main-info .result-items"
+      - name: 引擎检测明细       # 引擎名:检出名（未检出引擎检出名为空串；引擎 100+ 受 50 行上限截断）
+        click: 'a.result-nav-name:has-text("检测结果")'
+        wait_ms: 800
+        selector: "div#ti-md5 section.result-section:has(.engine-items-section)"
+        format: table
+        row_selector: ".engine-items-section .line-item"
+        column_map:
+          引擎: ".result-items-label"
+          检出名: ".result-items-content"
+      # ───── 基本信息 tab ─────
+      - name: 文件信息          # MD5/SHA1/SHA256/SHA512/CRC32/SSDeep/大小/类型/匹配度/文件名/发现时间
+        click: 'a.result-nav-name:has-text("基本信息")'
+        selector: 'section.result-section.basic-info .ivu-collapse-item:has(.result-detail-title:has-text("文件信息"))'
+        format: kv
+        item_selector: ".result-items"   # item 模式绕开哈希/时间戳冒号干扰
+      - name: Exiftool文件元数据
+        click: 'a.result-nav-name:has-text("基本信息")'
+        wait_ms: 800
+        selector: 'section.result-section.basic-info .ivu-collapse-item[data-shortcut="metadata"]'
+        format: kv
+        item_selector: ".result-items"
+      # ───── 主机行为 tab ─────
+      - name: 行为异常分析       # 结论列表（如“可能通过获取CPU数量来反虚拟化”）
+        click: 'a.result-nav-name:has-text("主机行为")'
+        selector: "#host_behavior"
+        format: table
+        row_selector: ".behavior-exception-analyze .analyze-title"
+        column_map:
+          异常行为: self
+      - name: 行为明细          # 5 列：时间&API|参数&栈跟踪|返回状态|返回值|进程ID（反虚拟化结论的 API 明细）
+        click: 'a.result-nav-name:has-text("主机行为")'
+        wait_ms: 800
+        # 按表头文字锁定目标 ivu-table-wrapper：#host_behavior 内可能有多张结论明细表
+        # （如 PE 资源表 6 列），整容器默认 tr 会把异构行混到一张表头下；
+        # tr.ivu-table-row 锁数据行（ivu-table-tip 隐藏空态行 innerText 退化会混入）
+        selector: '#host_behavior .ivu-table-wrapper:has-text("时间&API")'
+        format: table
+        row_selector: "tr.ivu-table-row"
+        column_map:
+          时间API: "td:nth-of-type(1)"
+          参数栈跟踪: "td:nth-of-type(2)"
+          返回状态: "td:nth-of-type(3)"
+          返回值: "td:nth-of-type(4)"
+          进程ID: "td:nth-of-type(5)"
+      - name: 资源信息          # 6 列：名称|语言|文件类型|子语言|偏移|大小（PE 资源结论明细，无则自动跳过）
+        click: 'a.result-nav-name:has-text("主机行为")'
+        wait_ms: 800
+        selector: '#host_behavior .ivu-table-wrapper:has-text("子语言")'   # th 带尾空格，text-is 不可靠
+        format: table
+        row_selector: "tr.ivu-table-row"
+        column_map:
+          名称: "td:nth-of-type(1)"
+          语言: "td:nth-of-type(2)"
+          文件类型: "td:nth-of-type(3)"
+          子语言: "td:nth-of-type(4)"
+          偏移: "td:nth-of-type(5)"
+          大小: "td:nth-of-type(6)"
+      - name: 进程树
+        click: 'a.result-nav-name:has-text("主机行为")'
+        wait_ms: 800
+        selector: 'section.result-section:has(#host_behavior) .ivu-collapse-item:has(.result-detail-title:has-text("进程树"))'
+        format: table
+        row_selector: ".ivu-tree li"
+        column_map:
+          进程节点: self
+      # ───── 网络行为 tab ─────
+      - name: DNS              # 5 列：活动时间|解析域名|IP|地理位置|ASN
+        click: 'a.result-nav-name:has-text("网络行为")'
+        selector: "#network_behavior_dns"
+        format: table
+      - name: 下载链接          # 2 列：活动时间|URL（内层 id 与 HTTP 面板重复，必须用标题定位）
+        click: 'a.result-nav-name:has-text("网络行为")'
+        wait_ms: 800
+        selector: 'section.result-section:has(#network_behavior_session) .ivu-collapse-item:has(.result-detail-title:has-text("下载链接"))'
+        format: table
+      # ───── r6：侧导航 tab ─────
+      - name: QAX情报           # 社区情报；数据走 community 微应用 API，非任务框架
+        click: 'a.result-nav-name:has-text("QAX情报")'
+        selector: "div#ti-md5 .inner-intelligence-wrapper"
+        format: text            # 面板懒渲染；本例空态“没有数据”，保持原文即空态信号
+      - name: 网页结果          # 搜索结果列表：标题|摘要；本例空态“没有数据”，无行自动降级 text
+        click: 'a.result-nav-name:has-text("网页结果")'
+        selector: "div#ti-md5 .result-sub-section.google_search"
+        format: table
+        row_selector: "ul.google_search_list li"
+        column_map:
+          标题: "h2"
+          摘要: "p"
+    # 未覆盖：社区 tab（跨域 iframe，不抓）；数字证书小节（基本信息-SSL证书指纹检索/
+    # 存在该数字证书的IP，本例均“没有数据”，当前 tab 条无数字证书入口）；
+    # 会话信息同构可补（selector "#network_behavior_session", format table），本例空态未纳入
