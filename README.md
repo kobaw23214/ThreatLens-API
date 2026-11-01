@@ -1,10 +1,14 @@
 # ThreatLens-API
 
 > 威胁情报实体提取平台 —— NER / ATT&CK / 联网情报,一站式提取与调度
+>
+> Threat Intelligence Entity Extraction Platform — NER · MITRE ATT&CK Mapping · TI Enrichment
 
 <div align="center">
 
 **NER 实体提取** · **ATT&CK 技术识别** · **联网情报扩线(微步/奇安信)**
+
+Entity Extraction · Technique Mapping · Threat Intelligence Enrichment
 
 </div>
 
@@ -20,7 +24,7 @@
 | **任务调度** | 异步队列、Worker 状态监控、结果缓存 TTL、Webhook 回调(成功/失败/重试) |
 | **管理后台** | 用户与限额、模型统计、缓存管理、API 手册 |
 
-## 🏗️ 架构
+## 🏗️ 架构与技术栈
 
 FastAPI + Vue3 + PostgreSQL,模型与会话运行时挂载、代码与镜像解耦,单 compose 一键起。
 
@@ -29,6 +33,10 @@ web/   Vue3 前端(仪表盘/调用台/统计)
 api/   FastAPI 后端(队列/模型/回调)
 docs/  手册与截图    tests/  测试
 ```
+
+**Backend** Python · FastAPI · GLiNER · Transformers · SciBERT(TRAM)· Playwright · PostgreSQL · Docker
+**Frontend** Vue 3 · ECharts · xterm.js
+**Domain** Threat Intelligence (CTI) · NER / Information Extraction · MITRE ATT&CK · IOC Extraction · Threat Hunting
 
 ## 🚀 快速开始
 
@@ -76,6 +84,18 @@ open http://localhost:8036
 
 **微信扫码交流 / Scan to chat on WeChat**
 
-<img src="docs/images/wechat-qrcode.jpg" alt="WeChat QR" width="220"/>
+<a href="docs/images/wechat-qrcode.jpg" target="_blank">
+  <img src="docs/images/wechat-qrcode.jpg" width="200" alt="WeChat QR Code" title="点击查看大图" />
+</a>
+
+**邮箱 / Email**: [1477746214@qq.com](mailto:1477746214@qq.com)
+
+</div>
+
+---
+
+<div align="center">
+
+**如果这个项目帮到了你,欢迎点一个 ⭐ Star 支持一下!**
 
 </div>
