@@ -47,11 +47,40 @@ open http://localhost:8036
 
 ## 🖼️ 界面
 
+#### 解析详情
+
 | | |
 |---|---|
-| ![解析详情](docs/images/parse-detail-ner-entity-graph.png) | ![ATT&CK识别](docs/images/parse-detail-attack-entities.png) |
-| ![NER调用台](docs/images/console-ner-playground.png) | ![任务统计](docs/images/stats-ner-overview.png) |
-| ![联网情报](docs/images/stats-ti-overview.png) | ![队列状态](docs/images/queue-status.png) |
+| ![NER 解析总览](docs/images/parse-detail-ner-overview.png) | ![NER 分块明细](docs/images/parse-detail-ner-chunks.png) |
+| ![NER 实体图谱](docs/images/parse-detail-ner-entity-graph.png) | ![ATT&CK 分块明细](docs/images/parse-detail-attack-chunks.png) |
+| ![ATT&CK 实体列表](docs/images/parse-detail-attack-entities.png) | ![联网情报·奇安信](docs/images/parse-detail-ti-qianxin.png) |
+
+#### 实体详情
+
+| | |
+|---|---|
+| ![NER 实体弹窗](docs/images/entity-detail-modal-ner.png) | ![ATT&CK 实体弹窗](docs/images/entity-detail-modal-attack.png) |
+
+#### 调用台
+
+| | |
+|---|---|
+| ![NER 调用台](docs/images/console-ner-playground.png) | ![ATT&CK 调用台](docs/images/console-attack-playground.png) |
+| ![API 调用台·NER](docs/images/api-playground-ner.png) | ![API 调用台·ATT&CK](docs/images/api-playground-attack.png) |
+
+#### 任务统计
+
+| | |
+|---|---|
+| ![NER 统计总览](docs/images/stats-ner-overview.png) | ![NER 模型统计](docs/images/stats-ner-models.png) |
+| ![ATT&CK 统计总览](docs/images/stats-attack-overview.png) | ![ATT&CK 模型统计](docs/images/stats-attack-models.png) |
+| ![联网情报统计](docs/images/stats-ti-overview.png) | ![队列状态](docs/images/queue-status.png) |
+
+#### 手册与管理
+
+| | |
+|---|---|
+| ![API 手册](docs/images/manual-ner-api.png) | ![用户管理](docs/images/admin-user-management.png) |
 
 ---
 
