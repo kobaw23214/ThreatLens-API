@@ -47,40 +47,26 @@ open http://localhost:8036
 
 ## 🖼️ 界面
 
-#### 解析详情
+| | |
+|:---:|:---:|
+| <img src="docs/images/parse-detail-ner-overview.png" width="380" alt="NER 解析总览"><br>**NER 解析总览** — 原文标注/类型分布/关系图 | <img src="docs/images/parse-detail-ner-entity-graph.png" width="380" alt="NER 实体图谱"><br>**NER 实体图谱** — 实体关系与置信度 |
+| <img src="docs/images/parse-detail-attack-entities.png" width="380" alt="ATT&CK 实体列表"><br>**ATT&CK 识别** — 技术编号与战术映射 | <img src="docs/images/parse-detail-ti-qianxin.png" width="380" alt="联网情报详情"><br>**联网情报** — 奇安信 IP 情报/AI 研判 |
+| <img src="docs/images/console-ner-playground.png" width="380" alt="NER 调用台"><br>**NER 调用台** — 标签配置/curl 预览 | <img src="docs/images/console-attack-playground.png" width="380" alt="ATT&CK 调用台"><br>**ATT&CK 调用台** — 模型选择/参数配置 |
+| <img src="docs/images/stats-ner-overview.png" width="380" alt="NER 统计"><br>**NER 任务统计** — 调用趋势/成功率/延迟 | <img src="docs/images/stats-ti-overview.png" width="380" alt="联网情报统计"><br>**联网情报统计** — 平台状态/种子分布 |
+| <img src="docs/images/queue-status.png" width="380" alt="队列状态"><br>**队列状态** — 三队列/Worker 监控 | <img src="docs/images/entity-detail-modal-ner.png" width="380" alt="实体详情弹窗"><br>**实体详情** — 原文定位/置信度 |
+
+<details>
+<summary>更多截图(分块明细、API 调用台、模型统计、手册与管理等)</summary>
 
 | | |
-|---|---|
-| ![NER 解析总览](docs/images/parse-detail-ner-overview.png) | ![NER 分块明细](docs/images/parse-detail-ner-chunks.png) |
-| ![NER 实体图谱](docs/images/parse-detail-ner-entity-graph.png) | ![ATT&CK 分块明细](docs/images/parse-detail-attack-chunks.png) |
-| ![ATT&CK 实体列表](docs/images/parse-detail-attack-entities.png) | ![联网情报·奇安信](docs/images/parse-detail-ti-qianxin.png) |
+|:---:|:---:|
+| <img src="docs/images/parse-detail-ner-chunks.png" width="380" alt="NER 分块明细"><br>**NER 分块明细** — Chunk 级实体分布 | <img src="docs/images/parse-detail-attack-chunks.png" width="380" alt="ATT&CK 分块明细"><br>**ATT&CK 分块明细** — 长文本分块识别 |
+| <img src="docs/images/entity-detail-modal-attack.png" width="380" alt="ATT&CK 实体弹窗"><br>**ATT&CK 实体详情** — 技术编号高亮定位 | <img src="docs/images/api-playground-ner.png" width="380" alt="API 调用台 NER"><br>**API 调用台** — NER 两步调用示例 |
+| <img src="docs/images/api-playground-attack.png" width="380" alt="API 调用台 ATT&CK"><br>**API 调用台** — ATT&CK 两步调用示例 | <img src="docs/images/stats-ner-models.png" width="380" alt="NER 模型统计"><br>**NER 模型统计** — 模型对比/性能表 |
+| <img src="docs/images/stats-attack-overview.png" width="380" alt="ATT&CK 统计"><br>**ATT&CK 任务统计** — 调用趋势/占比 | <img src="docs/images/stats-attack-models.png" width="380" alt="ATT&CK 模型统计"><br>**ATT&CK 模型统计** — tram/attack-auto 对比 |
+| <img src="docs/images/manual-ner-api.png" width="380" alt="API 手册"><br>**API 手册** — 在线集成文档 | <img src="docs/images/admin-user-management.png" width="380" alt="用户管理"><br>**管理后台** — 用户/限额管理 |
 
-#### 实体详情
-
-| | |
-|---|---|
-| ![NER 实体弹窗](docs/images/entity-detail-modal-ner.png) | ![ATT&CK 实体弹窗](docs/images/entity-detail-modal-attack.png) |
-
-#### 调用台
-
-| | |
-|---|---|
-| ![NER 调用台](docs/images/console-ner-playground.png) | ![ATT&CK 调用台](docs/images/console-attack-playground.png) |
-| ![API 调用台·NER](docs/images/api-playground-ner.png) | ![API 调用台·ATT&CK](docs/images/api-playground-attack.png) |
-
-#### 任务统计
-
-| | |
-|---|---|
-| ![NER 统计总览](docs/images/stats-ner-overview.png) | ![NER 模型统计](docs/images/stats-ner-models.png) |
-| ![ATT&CK 统计总览](docs/images/stats-attack-overview.png) | ![ATT&CK 模型统计](docs/images/stats-attack-models.png) |
-| ![联网情报统计](docs/images/stats-ti-overview.png) | ![队列状态](docs/images/queue-status.png) |
-
-#### 手册与管理
-
-| | |
-|---|---|
-| ![API 手册](docs/images/manual-ner-api.png) | ![用户管理](docs/images/admin-user-management.png) |
+</details>
 
 ---
 
