@@ -1,5 +1,10 @@
 # ThreatLens-API
 
+[![Stars](https://img.shields.io/github/stars/kobaw23214/ThreatLens-API?style=social)](https://github.com/kobaw23214/ThreatLens-API/stargazers)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+
 > 威胁情报实体提取平台 —— NER / ATT&CK / 联网情报,一站式提取与调度
 >
 > Threat Intelligence Entity Extraction Platform — NER · MITRE ATT&CK Mapping · TI Enrichment
