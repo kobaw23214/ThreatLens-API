@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ThreatLens NER Demo · 威胁情报实体抽取演示</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 60px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--dim);margin:0 0 24px}
+  .sub a{color:var(--acc);text-decoration:none}
+  textarea{width:100%;height:190px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:12px;font:14px/1.6 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+  textarea:focus{outline:1px solid var(--acc)}
+  .bar{display:flex;gap:10px;align-items:center;margin:12px 0 18px;flex-wrap:wrap}
+  button{background:#238636;color:#fff;border:1px solid rgba(240,246,252,.1);border-radius:6px;padding:8px 18px;font-size:14px;cursor:pointer}
+  button:hover{background:#2ea043}
+  button.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+  .hint{color:var(--dim);font-size:13px;margin-left:auto}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:18px}
+  .card h3{margin:0 0 10px;font-size:15px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .legend span{font-size:12px;padding:2px 10px;border-radius:10px;border:1px solid var(--line);color:var(--dim)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+  .text{white-space:pre-wrap;font:14px/1.9 ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+  mark{color:#0d1117;border-radius:3px;padding:0 3px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);word-break:break-all}
+  th{color:var(--dim);font-weight:600}
+  td.sc{color:var(--dim)}
+  .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600}
+  .empty{color:var(--dim)}
+  .foot{color:var(--dim);font-size:12.5px;text-align:center;margin-top:26px}
+  .foot a{color:var(--acc);text-decoration:none}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid #888;border-top-color:transparent;border-radius:50%;animation:r .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ThreatLens NER Demo</h1>
+  <p class="sub">威胁情报实体抽取在线演示 · GLiNER zero-shot ·
+    完整平台(ATT&amp;CK 映射 / TI 扩线 / API)见
+    <a href="https://github.com/kobaw23214/ThreatLens-API" target="_blank">GitHub → ThreatLens-API</a></p>
+
+  <textarea id="text"></textarea>
+  <div class="bar">
+    <button id="run">抽取实体</button>
+    <button class="ghost" id="sample">载入示例</button>
+    <span class="hint" id="hint">支持中英文 · 最多 8000 字符</span>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="card">
+    <h3>识别结果</h3>
+    <div class="text" id="output"><span class="empty">点击「抽取实体」开始</span></div>
+  </div>
+
+  <div class="card">
+    <h3>实体列表</h3>
+    <table><thead><tr><th>实体</th><th>类型</th><th style="width:80px">置信度</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="3" class="empty">—</td></tr></tbody></table>
+  </div>
+
+  <p class="foot">Demo 仅含 NER 能力 · 生产版含 NER / MITRE ATT&amp;CK 识别 / 微步·奇安信情报扩线 ·
+    <a href="https://github.com/kobaw23214/ThreatLens-API" target="_blank">⭐ GitHub</a></p>
+</div>
+
+<script>
+const SAMPLE = `2026年10月中旬,安全研究人员监测到 APT41 组织针对东亚多家能源企业的钓鱼活动。攻击者利用 CVE-2024-21412 代码执行漏洞投放 Loader,第一阶段 payload 托管于 hxxps://cdn-update-service.top/drop.bin,随后回连 C2 服务器 45.153.240.18 与 updatesync.ddns.net:8443。
+样本 SHA256 为 9f2c8a17d4e0b3f6a5c1d8e7f2b4a9c3d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0,运行后释放路径 C:\\Users\\Public\\svchost.exe,并写入注册表键 HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run 实现持久化。攻击者主要使用 DLL 侧加载与进程注入技术,受害者邮箱账号 woolibrary@target-corp.cn 为最初投递目标。`;
+
+const COLORS = ["#79c0ff","#ffa657","#7ee787","#ff7b72","#d2a8ff","#f2cc60","#56d4dd","#ff9bce","#a5d6ff","#bf7f7f","#89d8ff","#e3b341"];
+const LABELS = ["IP 地址","域名","URL","邮箱","文件哈希","CVE 编号","恶意软件","威胁组织","文件路径","注册表键","攻击技术","操作系统"];
+let colorOf = {};
+
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+function legend(){
+  const el=document.getElementById("legend");el.innerHTML="";
+  LABELS.forEach((l,i)=>{
+    colorOf[l]=COLORS[i%COLORS.length];
+    const s=document.createElement("span");
+    s.innerHTML=`<i style="background:${colorOf[l]}"></i>${esc(l)}`;
+    el.appendChild(s);
+  });
+}
+
+async function run(){
+  const text=document.getElementById("text").value.trim();
+  if(!text)return;
+  const btn=document.getElementById("run"),hint=document.getElementById("hint");
+  btn.disabled=true;hint.innerHTML=`<span class="spin"></span>模型推理中…`;
+  try{
+    const r=await fetch("/api/extract",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({text,labels:LABELS,threshold:0.5})});
+    if(!r.ok)throw new Error((await r.json()).detail||r.status);
+    render(text,await r.json());
+    hint.textContent="完成 ✓";
+  }catch(e){hint.textContent="失败: "+e.message}
+  btn.disabled=false;
+}
+
+function render(text,data){
+  const out=document.getElementById("output"),rows=document.getElementById("rows");
+  let html="",pos=0;
+  for(const e of data.entities){
+    html+=esc(text.slice(pos,e.start));
+    const c=colorOf[e.label]||"#999";
+    html+=`<mark style="background:${c}" title="${esc(e.label)} · ${e.score}">${esc(e.text)}</mark>`;
+    pos=e.end;
+  }
+  html+=esc(text.slice(pos));
+  out.innerHTML=html;
+  rows.innerHTML=data.entities.map(e=>`<tr><td>${esc(e.text)}</td>
+    <td><span class="tag" style="background:${colorOf[e.label]||"#999"}">${esc(e.label)}</span></td>
+    <td class="sc">${e.score}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">未识别到实体</td></tr>`;
+}
+
+document.getElementById("run").onclick=run;
+document.getElementById("sample").onclick=()=>{document.getElementById("text").value=SAMPLE;run()};
+document.getElementById("text").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")run()});
+document.getElementById("text").value=SAMPLE;
+legend();
+</script>
+</body>
+</html>

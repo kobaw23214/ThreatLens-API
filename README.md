@@ -4,6 +4,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Demo](https://img.shields.io/badge/NER%20Demo-demo%2F-ff69b4)](#-ner-在线演示)
 
 > 威胁情报实体提取平台 —— NER / ATT&CK / 联网情报,一站式提取与调度
 >
@@ -104,3 +105,17 @@ open http://localhost:8036
 **如果这个项目帮到了你,欢迎点一个 ⭐ Star 支持一下!**
 
 </div>
+
+## 🎯 NER 在线演示
+
+`demo/` 是自包含的实体抽取演示(**免 DB / 免 LLM / 免 TI 密钥**):GLiNER + FastAPI + 单文件演示页,可一键部署到 [Hugging Face Spaces](https://huggingface.co/spaces)(免费 Docker,面向 AI 受众的曝光渠道):
+
+```bash
+# 本地运行
+cd demo && docker build -t threatlens-demo . && docker run -p 8092:7860 threatlens-demo
+# 浏览器打开 http://localhost:8092 —— 内置 APT 报告示例,一键抽取实体
+```
+
+部署到 HF Spaces:新建 Docker Space → 上传 `demo/` 目录内容 → 访问 `https://<用户名>-threatlens-ner.hf.space`。
+
+> 演示仅含 NER;生产版含 ATT&CK 识别、TI 扩线、任务调度等完整能力。
